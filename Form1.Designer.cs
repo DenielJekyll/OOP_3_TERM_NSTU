@@ -36,6 +36,9 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label_x_cord = new System.Windows.Forms.Label();
             this.label_y_cord = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.trackBar1 = new System.Windows.Forms.TrackBar();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             this.SuspendLayout();
             // 
             // field
@@ -48,7 +51,7 @@
             this.field.BackColor = System.Drawing.Color.Black;
             this.field.ColorBits = ((byte)(32));
             this.field.DepthBits = ((byte)(16));
-            this.field.Location = new System.Drawing.Point(3, 4);
+            this.field.Location = new System.Drawing.Point(-25, -2);
             this.field.Name = "field";
             this.field.Size = new System.Drawing.Size(600, 500);
             this.field.StencilBits = ((byte)(0));
@@ -108,11 +111,35 @@
             this.label_y_cord.TabIndex = 6;
             this.label_y_cord.Text = "y cord";
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(613, 97);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(55, 39);
+            this.label3.TabIndex = 8;
+            this.label3.Text = "Скорость\r\nповорота\r\nфигуры";
+            // 
+            // trackBar1
+            // 
+            this.trackBar1.LargeChange = 1;
+            this.trackBar1.Location = new System.Drawing.Point(616, 153);
+            this.trackBar1.Maximum = 100;
+            this.trackBar1.Minimum = 1;
+            this.trackBar1.Name = "trackBar1";
+            this.trackBar1.Orientation = System.Windows.Forms.Orientation.Vertical;
+            this.trackBar1.Size = new System.Drawing.Size(45, 304);
+            this.trackBar1.TabIndex = 9;
+            this.trackBar1.Value = 1;
+            this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(815, 510);
+            this.Controls.Add(this.trackBar1);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.label_y_cord);
             this.Controls.Add(this.label_x_cord);
             this.Controls.Add(this.label2);
@@ -124,6 +151,7 @@
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -138,6 +166,8 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label_x_cord;
         private System.Windows.Forms.Label label_y_cord;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TrackBar trackBar1;
     }
 }
 

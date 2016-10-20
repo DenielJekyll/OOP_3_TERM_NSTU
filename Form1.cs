@@ -278,8 +278,8 @@ namespace WindowsFormsApplication3
         private Point[] static_points;
         private Point center = new Point(0, 0);
         private Point translate = new Point(0, 0);
-        public int move_speed;
-        public double rotating_speed;
+        public int move_speed = 2;
+        public double rotating_speed = 1;
         private double angle;
         private double[] scale = new double[2];
 
@@ -297,10 +297,7 @@ namespace WindowsFormsApplication3
 
             static_points[3].X = 400;
             static_points[3].Y = 200;
-
-            rotating_speed = 56f;
-            move_speed = 6;
-
+            
             angle = 0;
 
             scale[0] = 1;
@@ -321,9 +318,7 @@ namespace WindowsFormsApplication3
 
             static_points[3].X = new_points[3].X;
             static_points[3].Y = new_points[3].Y;
-
-            rotating_speed = 56f;
-            move_speed = 6;
+            
             angle = 0;
             scale[0] = 1;
             scale[1] = 1;
@@ -331,7 +326,7 @@ namespace WindowsFormsApplication3
 
         public void CreateRotate(double angle)
         {
-            this.angle += angle * Math.PI / 120.0 * rotating_speed;
+            this.angle += angle * Math.PI * rotating_speed;
         }
 
         //************* set функции **************

@@ -32,10 +32,6 @@
             this.field = new Tao.Platform.Windows.SimpleOpenGlControl();
             this.create_primitive = new System.Windows.Forms.Button();
             this.RenderTime = new System.Windows.Forms.Timer(this.components);
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label_x_cord = new System.Windows.Forms.Label();
-            this.label_y_cord = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.barRotatingSpeed = new System.Windows.Forms.TrackBar();
             this.label4 = new System.Windows.Forms.Label();
@@ -55,7 +51,7 @@
             this.field.AutoFinish = false;
             this.field.AutoMakeCurrent = true;
             this.field.AutoSwapBuffers = true;
-            this.field.BackColor = System.Drawing.SystemColors.Control;
+            this.field.BackColor = System.Drawing.SystemColors.AppWorkspace;
             this.field.ColorBits = ((byte)(32));
             this.field.DepthBits = ((byte)(16));
             this.field.Location = new System.Drawing.Point(7, 8);
@@ -83,88 +79,50 @@
             this.RenderTime.Interval = 30;
             this.RenderTime.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(767, 444);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(15, 13);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "x:";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(767, 457);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(15, 13);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "y:";
-            // 
-            // label_x_cord
-            // 
-            this.label_x_cord.AutoSize = true;
-            this.label_x_cord.Location = new System.Drawing.Point(788, 444);
-            this.label_x_cord.Name = "label_x_cord";
-            this.label_x_cord.Size = new System.Drawing.Size(36, 13);
-            this.label_x_cord.TabIndex = 5;
-            this.label_x_cord.Text = "x cord";
-            // 
-            // label_y_cord
-            // 
-            this.label_y_cord.AutoSize = true;
-            this.label_y_cord.Location = new System.Drawing.Point(788, 457);
-            this.label_y_cord.Name = "label_y_cord";
-            this.label_y_cord.Size = new System.Drawing.Size(36, 13);
-            this.label_y_cord.TabIndex = 6;
-            this.label_y_cord.Text = "y cord";
-            // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(640, 97);
+            this.label3.Location = new System.Drawing.Point(12, 582);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(55, 39);
+            this.label3.Size = new System.Drawing.Size(146, 13);
             this.label3.TabIndex = 8;
-            this.label3.Text = "Скорость\r\nповорота\r\nфигуры";
+            this.label3.Text = "Скорость поворота фигуры";
             // 
             // barRotatingSpeed
             // 
             this.barRotatingSpeed.LargeChange = 1;
-            this.barRotatingSpeed.Location = new System.Drawing.Point(643, 153);
-            this.barRotatingSpeed.Maximum = 100;
-            this.barRotatingSpeed.Minimum = 1;
+            this.barRotatingSpeed.Location = new System.Drawing.Point(12, 605);
+            this.barRotatingSpeed.Maximum = 11;
+            this.barRotatingSpeed.Minimum = 2;
             this.barRotatingSpeed.Name = "barRotatingSpeed";
-            this.barRotatingSpeed.Orientation = System.Windows.Forms.Orientation.Vertical;
-            this.barRotatingSpeed.Size = new System.Drawing.Size(45, 304);
+            this.barRotatingSpeed.Size = new System.Drawing.Size(304, 45);
             this.barRotatingSpeed.TabIndex = 9;
-            this.barRotatingSpeed.Value = 56;
+            this.barRotatingSpeed.Value = 2;
             this.barRotatingSpeed.Scroll += new System.EventHandler(this.rotatingSpeed);
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(701, 97);
+            this.label4.Location = new System.Drawing.Point(12, 518);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(57, 39);
+            this.label4.Size = new System.Drawing.Size(149, 13);
             this.label4.TabIndex = 10;
-            this.label4.Text = "Скорость\r\nдвижения\r\nфигуры";
+            this.label4.Text = "Скорость движения фигуры";
             // 
             // barMoveSpeed
             // 
             this.barMoveSpeed.LargeChange = 1;
-            this.barMoveSpeed.Location = new System.Drawing.Point(704, 153);
+            this.barMoveSpeed.Location = new System.Drawing.Point(12, 536);
             this.barMoveSpeed.Minimum = 1;
             this.barMoveSpeed.Name = "barMoveSpeed";
-            this.barMoveSpeed.Orientation = System.Windows.Forms.Orientation.Vertical;
-            this.barMoveSpeed.Size = new System.Drawing.Size(45, 304);
+            this.barMoveSpeed.Size = new System.Drawing.Size(304, 45);
             this.barMoveSpeed.TabIndex = 11;
-            this.barMoveSpeed.Value = 6;
+            this.barMoveSpeed.Value = 1;
             this.barMoveSpeed.Scroll += new System.EventHandler(this.moveSpeed);
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(726, 12);
+            this.button1.Location = new System.Drawing.Point(614, 56);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(104, 38);
             this.button1.TabIndex = 12;
@@ -208,7 +166,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(842, 520);
+            this.ClientSize = new System.Drawing.Size(725, 653);
             this.Controls.Add(this.exeption_label);
             this.Controls.Add(this.center_label);
             this.Controls.Add(this.info_label);
@@ -217,13 +175,8 @@
             this.Controls.Add(this.label4);
             this.Controls.Add(this.barRotatingSpeed);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.label_y_cord);
-            this.Controls.Add(this.label_x_cord);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.create_primitive);
             this.Controls.Add(this.field);
-            this.MinimumSize = new System.Drawing.Size(831, 549);
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -239,10 +192,6 @@
         private Tao.Platform.Windows.SimpleOpenGlControl field;
         private System.Windows.Forms.Button create_primitive;
         private System.Windows.Forms.Timer RenderTime;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label_x_cord;
-        private System.Windows.Forms.Label label_y_cord;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TrackBar barRotatingSpeed;
         private System.Windows.Forms.Label label4;

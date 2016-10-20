@@ -120,6 +120,7 @@ namespace WindowsFormsApplication3
         {
             example = new Figure();
             Draw();
+            field.Focus();
         }
 
         private void field_Load(object sender, EventArgs e)
@@ -211,7 +212,7 @@ namespace WindowsFormsApplication3
                         }
                         catch (Exception)
                         {
-                            exeption_label.Text = "Warning t = NaN, line 185 Введите точки заного";
+                            exeption_label.Text = "Warning t = NaN Введите точки заного";
                             for (int i = 0; i < 3; i++)
                                 temp_points[i] = new Point(-1, -1);
                         }
@@ -247,14 +248,14 @@ namespace WindowsFormsApplication3
         {
             if (example != null)
              example.rotating_speed = barRotatingSpeed.Value;
-            field.Select();// or .Focus(); It does not work
+            field.Focus();
         }
 
         private void enableInput(object sender, EventArgs e)
         {
             exeption_label.Text = "";
             flag_input = true;
-            field.Select();
+            field.Focus();
         }
 
         private void timer1_Tick(object sender, EventArgs e)

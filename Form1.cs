@@ -8,6 +8,7 @@ using Tao.OpenGl;
 using Tao.FreeGlut;
 // для работы с элементом управления SimpleOpenGLControl 
 using Tao.Platform.Windows;
+using System.Collections;
 
 namespace WindowsFormsApplication3
 {
@@ -15,6 +16,8 @@ namespace WindowsFormsApplication3
     {
         Figure example;
         private short count_click = 0;
+        private uint count_figures = 0;
+        private ArrayList figures = new ArrayList();
         private Point[] temp_points = new Point[4];
         private bool flag_input = false;// триггер для произвольного ввода точек
 
@@ -56,7 +59,7 @@ namespace WindowsFormsApplication3
             Gl.glLoadIdentity();
             // помещаем состояние матрицы в стек матриц 
             Gl.glPushMatrix();
-            if (example != null)
+            if (figures.Count > 0)
             {
                 /*
                  Список известных ошибок:
@@ -76,26 +79,31 @@ namespace WindowsFormsApplication3
                 функция myMouse() -> left button
                 Тест: вставлен костыль try - cath 
                  */
-                Gl.glTranslated(example.getCenterX(), example.getCenterY(), 0.0f);
-                Gl.glRotated(example.getAngle(), 0, 0, 1);
-                Gl.glScalef((float)example.getScaleX(), (float)example.getScaleY(), 1);
-                Gl.glTranslated(example.getTranslateX(), example.getTranslateY(), 0.0f);
-                Gl.glTranslated(-example.getCenterX(), -example.getCenterY(), 0.0f);
-                Point[] points = example.getPoints();
-                Gl.glBegin(Gl.GL_POLYGON);
-                Gl.glColor3d(255, 0, 0);
-                Gl.glVertex2f(points[3].X, points[3].Y);
-                Gl.glColor3d(0, 255, 0);
-                Gl.glVertex2f(points[0].X, points[0].Y);
-                Gl.glColor3d(0, 0, 255);
-                Gl.glVertex2f(points[1].X, points[1].Y);
-                Gl.glColor3d(255, 123, 0);
-                Gl.glVertex2f(points[2].X, points[2].Y);
-                Gl.glEnd();
-                Gl.glBegin(Gl.GL_POINTS);
-                Gl.glColor3d(255, 0, 0);
-                Gl.glVertex2d(example.getCenterX(), example.getCenterY());
-                Gl.glEnd();
+                foreach (Figure i_figure in figures)
+                {
+
+                    Gl.glTranslated(i_figure.getCenterX(), i_figure.getCenterY(), 0.0f);
+                    Gl.glRotated(i_figure.getAngle(), 0, 0, 1);
+                    Gl.glScalef((float)i_figure.getScaleX(), (float)i_figure.getScaleY(), 1);
+                    Gl.glTranslated(i_figure.getTranslateX(), i_figure.getTranslateY(), 0.0f);
+                    Gl.glTranslated(-i_figure.getCenterX(), -i_figure.getCenterY(), 0.0f);
+                    Point[] points = i_figure.getPoints();
+                    Gl.glBegin(Gl.GL_POLYGON);
+                    Gl.glColor3d(255, 0, 0);
+                    Gl.glVertex2f(points[3].X, points[3].Y);
+                    Gl.glColor3d(0, 255, 0);
+                    Gl.glVertex2f(points[0].X, points[0].Y);
+                    Gl.glColor3d(0, 0, 255);
+                    Gl.glVertex2f(points[1].X, points[1].Y);
+                    Gl.glColor3d(255, 123, 0);
+                    Gl.glVertex2f(points[2].X, points[2].Y);
+                    Gl.glEnd();
+                    Gl.glBegin(Gl.GL_POINTS);
+                    Gl.glColor3d(255, 0, 0);
+                    Gl.glVertex2d(i_figure.getCenterX(), i_figure.getCenterY());
+                    Gl.glEnd();
+                }
+                
             }
             if (flag_input)
             {
@@ -118,8 +126,9 @@ namespace WindowsFormsApplication3
 
         public void btn_create_primitive(object sender, EventArgs e)
         {
-            example = new Figure();
-            Draw();
+            //example = new Figure();
+            figures.Add(new Figure());
+            cBoxCountFigures.Items.Add(count_figures++);
             field.Focus();
         }
 
@@ -133,7 +142,11 @@ namespace WindowsFormsApplication3
         //************* функции обработчики **************
         private void field_KeyDown(object sender, KeyEventArgs e)
         {
-            if (example != null)
+
+
+            if (figures.Count > 0)
+            {
+                Figure example = (Figure)figures[Convert.ToInt32(cBoxCountFigures.Text)];
                 switch (e.KeyCode)
                 {
                     // W A S D отвечают за перемещение по x и y 
@@ -171,6 +184,7 @@ namespace WindowsFormsApplication3
                         example.CreateRotate(-1.0f);
                         break;
                 }
+            }
         }
 
         private void myMouse(object sender, MouseEventArgs e)
@@ -205,8 +219,9 @@ namespace WindowsFormsApplication3
                             temp_points[3].X = temp_points[0].X + Convert.ToInt32((temp_points[2].X - temp_points[1].X) * t);
                             temp_points[3].Y = temp_points[0].Y + Convert.ToInt32((temp_points[2].Y - temp_points[1].Y) * t);
                             //warning
-                            example = new Figure(temp_points);
-                            Draw();
+                            //example = new Figure(temp_points);
+                            figures.Add(new Figure(temp_points));
+                            cBoxCountFigures.Items.Add(count_figures++);
                             for (int i = 0; i < 3; i++)
                                 temp_points[i] = new Point(-1, -1);
                         }
@@ -221,9 +236,10 @@ namespace WindowsFormsApplication3
                 }
             }
             if (e.Button == MouseButtons.Right)
-                if (example != null)
+                 if (figures.Count > 0)
                 {
-                    center_label.Text = "(" + e.X + ", " + (field.Height - e.Y) + ")";
+                    //center_label.Text = "(" + e.X + ", " + (field.Height - e.Y) + ")";
+                    Figure example = (Figure)figures[Convert.ToInt32(cBoxCountFigures.Text)];
                     example.setCenter(new Point(e.X, field.Height - e.Y));
                 }
                    
@@ -231,13 +247,16 @@ namespace WindowsFormsApplication3
 
         private void myMouseWheel(object sender, MouseEventArgs e)
         {
-
-            if (e.Delta > 0)
-                if (example != null)
-                    example.setScale(-0.05f, -0.05f);
-            if (e.Delta < 0)
-                if (example != null)
-                    example.setScale(0.05f, 0.05f);
+            if (figures.Count > 0)
+            {
+                Figure example = (Figure)figures[Convert.ToInt32(cBoxCountFigures.Text)];
+                if (e.Delta > 0)
+                    if (figures.Count > 0)
+                        example.setScale(-0.05f, -0.05f);
+                if (e.Delta < 0)
+                    if (figures.Count > 0)
+                        example.setScale(0.05f, 0.05f);
+            }
         }
         //*************                     **************
 
@@ -246,8 +265,12 @@ namespace WindowsFormsApplication3
         //************* функции константы **************
         private void rotatingSpeed(object sender, EventArgs e)
         {
-            if (example != null)
-             example.rotating_speed = barRotatingSpeed.Value;
+
+            if (figures.Count > 0)
+            {
+                Figure example = (Figure)figures[Convert.ToInt32(cBoxCountFigures.Text)];
+                example.rotating_speed = barRotatingSpeed.Value;
+            }
             field.Focus();
         }
 
@@ -265,8 +288,11 @@ namespace WindowsFormsApplication3
 
         private void moveSpeed(object sender, EventArgs e)
         {
-            if (example != null)
+            if (figures.Count > 0)
+            {
+                Figure example = (Figure)figures[Convert.ToInt32(cBoxCountFigures.Text)];
                 example.move_speed = barMoveSpeed.Value;
+            }
             field.Focus();
         }
         

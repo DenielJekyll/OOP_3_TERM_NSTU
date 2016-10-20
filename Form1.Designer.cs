@@ -40,6 +40,8 @@
             this.info_label = new System.Windows.Forms.Label();
             this.center_label = new System.Windows.Forms.Label();
             this.exeption_label = new System.Windows.Forms.Label();
+            this.cBoxCountFigures = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.barRotatingSpeed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.barMoveSpeed)).BeginInit();
             this.SuspendLayout();
@@ -162,11 +164,31 @@
             this.exeption_label.TabIndex = 15;
             this.exeption_label.Text = "Ok";
             // 
+            // cBoxCountFigures
+            // 
+            this.cBoxCountFigures.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cBoxCountFigures.FormattingEnabled = true;
+            this.cBoxCountFigures.Location = new System.Drawing.Point(614, 139);
+            this.cBoxCountFigures.Name = "cBoxCountFigures";
+            this.cBoxCountFigures.Size = new System.Drawing.Size(104, 21);
+            this.cBoxCountFigures.TabIndex = 16;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(613, 103);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(111, 26);
+            this.label1.TabIndex = 17;
+            this.label1.Text = "Выбранная фигура\r\nдля редактирования";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(725, 653);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.cBoxCountFigures);
             this.Controls.Add(this.exeption_label);
             this.Controls.Add(this.center_label);
             this.Controls.Add(this.info_label);
@@ -200,6 +222,8 @@
         private System.Windows.Forms.Label info_label;
         private System.Windows.Forms.Label center_label;
         private System.Windows.Forms.Label exeption_label;
+        private System.Windows.Forms.ComboBox cBoxCountFigures;
+        private System.Windows.Forms.Label label1;
     }
 }
 

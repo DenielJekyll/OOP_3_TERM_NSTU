@@ -36,6 +36,8 @@ namespace WindowsFormsApplication3
             Gl.glClearColor(0, 0, 0, 1);
             // установка порта вывода в соответствии с размерами элемента anT 
             Gl.glViewport(0, 0, field.Width, field.Height);
+            Gl.glPointSize(5);
+            Gl.glEnable(Gl.GL_POINT_SMOOTH);
             // настройка проекции 
             Gl.glMatrixMode(Gl.GL_PROJECTION);
             Gl.glLoadIdentity();
@@ -49,15 +51,31 @@ namespace WindowsFormsApplication3
         {
             // очистка буфера цвета и буфера глубины 
             Gl.glClear(Gl.GL_COLOR_BUFFER_BIT | Gl.GL_DEPTH_BUFFER_BIT);
-            Gl.glClearColor(0, 0, 0, 1);
+            Gl.glClearColor(255, 255, 255, 1);
             // очищение текущей матрицы 
             Gl.glLoadIdentity();
-            // установка черного цвета 
-            Gl.glColor3f(0, 0, 0);
             // помещаем состояние матрицы в стек матриц 
             Gl.glPushMatrix();
             if (example != null)
             {
+                /*
+                 Список известных ошибок:
+                 - центр вращения "не пересчитывается" после сдвига фигуры по x || y
+                 Тест: создать фигуру, задать центр, убрать руку от мыши, повращать, 
+                 убедиться, что вращение проиходит вокруг выбранной точки, сдвинуть фигуру по x и повращать заного.
+                 Важный момент, точка которая является центром будет смещена на ваш сдвиг, 
+                 но вращение будет происходить относительно старой точки, где ваш курсов мыши.
+
+                 - если повернуть фигуру на 180, то происходит эффект инверсии(движение верх это движение вниз)
+                 Тест: создать фигуру, задать центр, сделать поворот фигуры на 180, попытаться сдвинуть по x || y.
+
+                 - если при задании точек все точки будут лежать на одной прямой => вылет
+                 Тест: не проверено
+
+                - если задать все 3 точки как одну (т.е. жать в одну точку 3 раза), то значение t = NaN; 
+                функция myMouse() -> left button
+                Тест: вставлен костыль try - cath 
+                 */
                 Gl.glTranslated(example.getCenterX(), example.getCenterY(), 0.0f);
                 Gl.glRotated(example.getAngle(), 0, 0, 1);
                 Gl.glScalef((float)example.getScaleX(), (float)example.getScaleY(), 1);
@@ -66,24 +84,27 @@ namespace WindowsFormsApplication3
                 Point[] points = example.getPoints();
                 Gl.glBegin(Gl.GL_POLYGON);
                 Gl.glColor3d(255, 0, 0);
-
                 Gl.glVertex2f(points[3].X, points[3].Y);
+                Gl.glColor3d(0, 255, 0);
                 Gl.glVertex2f(points[0].X, points[0].Y);
+                Gl.glColor3d(0, 0, 255);
                 Gl.glVertex2f(points[1].X, points[1].Y);
+                Gl.glColor3d(255, 123, 0);
                 Gl.glVertex2f(points[2].X, points[2].Y);
+                Gl.glEnd();
+                Gl.glBegin(Gl.GL_POINTS);
+                Gl.glColor3d(255, 0, 0);
+                Gl.glVertex2d(example.getCenterX(), example.getCenterY());
                 Gl.glEnd();
             }
             if (flag_input)
             {
-               Gl.glBegin(Gl.GL_POINTS);
-               Gl.glColor3d(255, 255, 255);
-                if (temp_points[0].X != -1)
-                    Gl.glVertex2d(temp_points[0].X, temp_points[0].Y);
-                if (temp_points[1].X != -1)
-                    Gl.glVertex2d(temp_points[1].X, temp_points[1].Y);
-                if (temp_points[2].X != -1)
-                    Gl.glVertex2d(temp_points[2].X, temp_points[2].Y);
-               Gl.glEnd();
+                Gl.glBegin(Gl.GL_POINTS);
+                Gl.glColor3d(0, 0, 0);
+                Gl.glVertex2d(temp_points[0].X, temp_points[0].Y);
+                Gl.glVertex2d(temp_points[1].X, temp_points[1].Y);
+                Gl.glVertex2d(temp_points[2].X, temp_points[2].Y);
+                Gl.glEnd();
              }
                 
             // возвращаем состояние матрицы 
@@ -103,7 +124,7 @@ namespace WindowsFormsApplication3
 
         private void field_Load(object sender, EventArgs e)
         {
-
+           
         }
 
 
@@ -200,7 +221,11 @@ namespace WindowsFormsApplication3
             }
             if (e.Button == MouseButtons.Right)
                 if (example != null)
-                    example.setCenter(new Point(e.X, e.Y));
+                {
+                    center_label.Text = "(" + e.X + ", " + (field.Height - e.Y) + ")";
+                    example.setCenter(new Point(e.X, field.Height - e.Y));
+                }
+                   
         }
 
         private void myMouseWheel(object sender, MouseEventArgs e)
@@ -250,7 +275,7 @@ namespace WindowsFormsApplication3
     public class Figure
     {
         private Point[] static_points;
-        private Point center = new Point(225, 250);
+        private Point center = new Point(0, 0);
         private Point translate = new Point(0, 0);
         public int move_speed;
         public double rotating_speed;
@@ -272,16 +297,13 @@ namespace WindowsFormsApplication3
             static_points[3].X = 400;
             static_points[3].Y = 200;
 
-            rotating_speed = 1.0f;
-            move_speed = 1;
+            rotating_speed = 56f;
+            move_speed = 6;
 
             angle = 0;
 
             scale[0] = 1;
             scale[1] = 1;
-            
-
-            center = new Point(225,250);
         }
 
         public Figure(Point[] new_points)
@@ -299,12 +321,11 @@ namespace WindowsFormsApplication3
             static_points[3].X = new_points[3].X;
             static_points[3].Y = new_points[3].Y;
 
-            rotating_speed = 1.0f;
-            move_speed = 1;
+            rotating_speed = 56f;
+            move_speed = 6;
             angle = 0;
             scale[0] = 1;
             scale[1] = 1;
-            //объявление точки вращения вокруг собственной оси center = new Point(x_c, y_c);
         }
 
         public void CreateRotate(double angle)

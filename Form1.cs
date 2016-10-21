@@ -58,7 +58,7 @@ namespace WindowsFormsApplication3
             // очищение текущей матрицы 
             Gl.glLoadIdentity();
             // помещаем состояние матрицы в стек матриц 
-            Gl.glPushMatrix();
+           
             if (figures.Count > 0)
             {
                 /*
@@ -81,7 +81,7 @@ namespace WindowsFormsApplication3
                  */
                 foreach (Figure i_figure in figures)
                 {
-
+                    Gl.glPushMatrix();
                     Gl.glTranslated(i_figure.getCenterX(), i_figure.getCenterY(), 0.0f);
                     Gl.glRotated(i_figure.getAngle(), 0, 0, 1);
                     Gl.glScalef((float)i_figure.getScaleX(), (float)i_figure.getScaleY(), 1);
@@ -102,6 +102,7 @@ namespace WindowsFormsApplication3
                     Gl.glColor3d(255, 0, 0);
                     Gl.glVertex2d(i_figure.getCenterX(), i_figure.getCenterY());
                     Gl.glEnd();
+                    Gl.glPopMatrix();
                 }
                 
             }
@@ -116,7 +117,7 @@ namespace WindowsFormsApplication3
              }
                 
             // возвращаем состояние матрицы 
-            Gl.glPopMatrix();
+            
             // отрисовываем геометрию 
             Gl.glFlush();
             // обновляем состояние элемента 

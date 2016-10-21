@@ -30,18 +30,20 @@
         {
             this.components = new System.ComponentModel.Container();
             this.field = new Tao.Platform.Windows.SimpleOpenGlControl();
-            this.create_primitive = new System.Windows.Forms.Button();
+            this.btnCreateParallelogram = new System.Windows.Forms.Button();
             this.RenderTime = new System.Windows.Forms.Timer(this.components);
             this.label3 = new System.Windows.Forms.Label();
             this.barRotatingSpeed = new System.Windows.Forms.TrackBar();
             this.label4 = new System.Windows.Forms.Label();
             this.barMoveSpeed = new System.Windows.Forms.TrackBar();
             this.button1 = new System.Windows.Forms.Button();
-            this.info_label = new System.Windows.Forms.Label();
-            this.center_label = new System.Windows.Forms.Label();
             this.exeption_label = new System.Windows.Forms.Label();
-            this.cBoxCountFigures = new System.Windows.Forms.ComboBox();
+            this.cboxCountFigures = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.btnSetColor = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.btn_Delete_Shape = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.barRotatingSpeed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.barMoveSpeed)).BeginInit();
             this.SuspendLayout();
@@ -62,18 +64,18 @@
             this.field.StencilBits = ((byte)(0));
             this.field.TabIndex = 0;
             this.field.Load += new System.EventHandler(this.field_Load);
-            this.field.KeyDown += new System.Windows.Forms.KeyEventHandler(this.field_KeyDown);
-            this.field.MouseClick += new System.Windows.Forms.MouseEventHandler(this.myMouse);
+            this.field.KeyDown += new System.Windows.Forms.KeyEventHandler(this.field_Key_Down);
+            this.field.MouseClick += new System.Windows.Forms.MouseEventHandler(this.field_Mouse_Click);
             // 
-            // create_primitive
+            // btnCreateParallelogram
             // 
-            this.create_primitive.Location = new System.Drawing.Point(614, 12);
-            this.create_primitive.Name = "create_primitive";
-            this.create_primitive.Size = new System.Drawing.Size(104, 38);
-            this.create_primitive.TabIndex = 2;
-            this.create_primitive.Text = "Создать параллелограмм";
-            this.create_primitive.UseVisualStyleBackColor = true;
-            this.create_primitive.Click += new System.EventHandler(this.btn_create_primitive);
+            this.btnCreateParallelogram.Location = new System.Drawing.Point(614, 12);
+            this.btnCreateParallelogram.Name = "btnCreateParallelogram";
+            this.btnCreateParallelogram.Size = new System.Drawing.Size(104, 38);
+            this.btnCreateParallelogram.TabIndex = 2;
+            this.btnCreateParallelogram.Text = "Создать параллелограмм";
+            this.btnCreateParallelogram.UseVisualStyleBackColor = true;
+            this.btnCreateParallelogram.Click += new System.EventHandler(this.btn_Create_Parallelogram);
             // 
             // RenderTime
             // 
@@ -84,43 +86,45 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 582);
+            this.label3.Location = new System.Drawing.Point(38, 613);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(146, 13);
+            this.label3.Size = new System.Drawing.Size(105, 13);
             this.label3.TabIndex = 8;
-            this.label3.Text = "Скорость поворота фигуры";
+            this.label3.Text = "Скорость поворота";
             // 
             // barRotatingSpeed
             // 
+            this.barRotatingSpeed.Enabled = false;
             this.barRotatingSpeed.LargeChange = 1;
-            this.barRotatingSpeed.Location = new System.Drawing.Point(12, 605);
-            this.barRotatingSpeed.Maximum = 11;
-            this.barRotatingSpeed.Minimum = 2;
+            this.barRotatingSpeed.Location = new System.Drawing.Point(38, 636);
+            this.barRotatingSpeed.Minimum = 1;
             this.barRotatingSpeed.Name = "barRotatingSpeed";
             this.barRotatingSpeed.Size = new System.Drawing.Size(304, 45);
             this.barRotatingSpeed.TabIndex = 9;
-            this.barRotatingSpeed.Value = 2;
-            this.barRotatingSpeed.Scroll += new System.EventHandler(this.rotatingSpeed);
+            this.barRotatingSpeed.Value = 1;
+            this.barRotatingSpeed.Scroll += new System.EventHandler(this.rotating_Speed_Change);
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(12, 518);
+            this.label4.Location = new System.Drawing.Point(38, 549);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(149, 13);
+            this.label4.Size = new System.Drawing.Size(108, 13);
             this.label4.TabIndex = 10;
-            this.label4.Text = "Скорость движения фигуры";
+            this.label4.Text = "Скорость движения";
             // 
             // barMoveSpeed
             // 
+            this.barMoveSpeed.Enabled = false;
             this.barMoveSpeed.LargeChange = 1;
-            this.barMoveSpeed.Location = new System.Drawing.Point(12, 536);
-            this.barMoveSpeed.Minimum = 1;
+            this.barMoveSpeed.Location = new System.Drawing.Point(38, 567);
+            this.barMoveSpeed.Maximum = 11;
+            this.barMoveSpeed.Minimum = 2;
             this.barMoveSpeed.Name = "barMoveSpeed";
             this.barMoveSpeed.Size = new System.Drawing.Size(304, 45);
             this.barMoveSpeed.TabIndex = 11;
-            this.barMoveSpeed.Value = 1;
-            this.barMoveSpeed.Scroll += new System.EventHandler(this.moveSpeed);
+            this.barMoveSpeed.Value = 2;
+            this.barMoveSpeed.Scroll += new System.EventHandler(this.move_Speed_Change);
             // 
             // button1
             // 
@@ -130,28 +134,7 @@
             this.button1.TabIndex = 12;
             this.button1.Text = "Задать произвольно";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.enableInput);
-            // 
-            // info_label
-            // 
-            this.info_label.AutoSize = true;
-            this.info_label.BackColor = System.Drawing.SystemColors.Window;
-            this.info_label.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.info_label.Location = new System.Drawing.Point(12, 9);
-            this.info_label.Name = "info_label";
-            this.info_label.Size = new System.Drawing.Size(173, 13);
-            this.info_label.TabIndex = 13;
-            this.info_label.Text = "Красная точка - центр вращения";
-            // 
-            // center_label
-            // 
-            this.center_label.AutoSize = true;
-            this.center_label.BackColor = System.Drawing.SystemColors.Window;
-            this.center_label.Location = new System.Drawing.Point(191, 9);
-            this.center_label.Name = "center_label";
-            this.center_label.Size = new System.Drawing.Size(31, 13);
-            this.center_label.TabIndex = 14;
-            this.center_label.Text = "(0, 0)";
+            this.button1.Click += new System.EventHandler(this.enable_Input_Parallelogram);
             // 
             // exeption_label
             // 
@@ -164,14 +147,15 @@
             this.exeption_label.TabIndex = 15;
             this.exeption_label.Text = "Ok";
             // 
-            // cBoxCountFigures
+            // cboxCountFigures
             // 
-            this.cBoxCountFigures.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cBoxCountFigures.FormattingEnabled = true;
-            this.cBoxCountFigures.Location = new System.Drawing.Point(614, 139);
-            this.cBoxCountFigures.Name = "cBoxCountFigures";
-            this.cBoxCountFigures.Size = new System.Drawing.Size(104, 21);
-            this.cBoxCountFigures.TabIndex = 16;
+            this.cboxCountFigures.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboxCountFigures.FormattingEnabled = true;
+            this.cboxCountFigures.Location = new System.Drawing.Point(614, 139);
+            this.cboxCountFigures.Name = "cboxCountFigures";
+            this.cboxCountFigures.Size = new System.Drawing.Size(104, 21);
+            this.cboxCountFigures.TabIndex = 16;
+            this.cboxCountFigures.SelectedIndexChanged += new System.EventHandler(this.cbox_Selected_Item_Change);
             // 
             // label1
             // 
@@ -182,22 +166,63 @@
             this.label1.TabIndex = 17;
             this.label1.Text = "Выбранная фигура\r\nдля редактирования";
             // 
+            // btnSetColor
+            // 
+            this.btnSetColor.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.btnSetColor.Enabled = false;
+            this.btnSetColor.Location = new System.Drawing.Point(348, 567);
+            this.btnSetColor.Name = "btnSetColor";
+            this.btnSetColor.Size = new System.Drawing.Size(50, 50);
+            this.btnSetColor.TabIndex = 18;
+            this.btnSetColor.UseVisualStyleBackColor = false;
+            this.btnSetColor.Click += new System.EventHandler(this.btn_Set_Color_Click);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(12, 526);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(96, 13);
+            this.label2.TabIndex = 19;
+            this.label2.Text = "Свойства фигуры";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(345, 549);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(32, 13);
+            this.label5.TabIndex = 20;
+            this.label5.Text = "Цвет";
+            // 
+            // btn_Delete_Shape
+            // 
+            this.btn_Delete_Shape.Location = new System.Drawing.Point(613, 177);
+            this.btn_Delete_Shape.Name = "btn_Delete_Shape";
+            this.btn_Delete_Shape.Size = new System.Drawing.Size(104, 47);
+            this.btn_Delete_Shape.TabIndex = 21;
+            this.btn_Delete_Shape.Text = "Удалить выбранную фигуру";
+            this.btn_Delete_Shape.UseVisualStyleBackColor = true;
+            this.btn_Delete_Shape.Click += new System.EventHandler(this.btn_Delete_Sel_Shape);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(725, 653);
+            this.ClientSize = new System.Drawing.Size(725, 716);
+            this.Controls.Add(this.btn_Delete_Shape);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.btnSetColor);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.cBoxCountFigures);
+            this.Controls.Add(this.cboxCountFigures);
             this.Controls.Add(this.exeption_label);
-            this.Controls.Add(this.center_label);
-            this.Controls.Add(this.info_label);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.barMoveSpeed);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.barRotatingSpeed);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.create_primitive);
+            this.Controls.Add(this.btnCreateParallelogram);
             this.Controls.Add(this.field);
             this.Name = "Form1";
             this.Text = "Form1";
@@ -212,18 +237,20 @@
         #endregion
 
         private Tao.Platform.Windows.SimpleOpenGlControl field;
-        private System.Windows.Forms.Button create_primitive;
+        private System.Windows.Forms.Button btnCreateParallelogram;
         private System.Windows.Forms.Timer RenderTime;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TrackBar barRotatingSpeed;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TrackBar barMoveSpeed;
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Label info_label;
-        private System.Windows.Forms.Label center_label;
         private System.Windows.Forms.Label exeption_label;
-        private System.Windows.Forms.ComboBox cBoxCountFigures;
+        private System.Windows.Forms.ComboBox cboxCountFigures;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button btnSetColor;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button btn_Delete_Shape;
     }
 }
 

@@ -44,6 +44,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.btn_Delete_Shape = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.barRotatingSpeed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.barMoveSpeed)).BeginInit();
             this.SuspendLayout();
@@ -66,6 +68,7 @@
             this.field.Load += new System.EventHandler(this.field_Load);
             this.field.KeyDown += new System.Windows.Forms.KeyEventHandler(this.field_Key_Down);
             this.field.MouseClick += new System.Windows.Forms.MouseEventHandler(this.field_Mouse_Click);
+            this.field.MouseMove += new System.Windows.Forms.MouseEventHandler(this.field_Mouse_Move);
             // 
             // btnCreateParallelogram
             // 
@@ -94,7 +97,6 @@
             // 
             // barRotatingSpeed
             // 
-            this.barRotatingSpeed.Enabled = false;
             this.barRotatingSpeed.LargeChange = 1;
             this.barRotatingSpeed.Location = new System.Drawing.Point(38, 636);
             this.barRotatingSpeed.Minimum = 1;
@@ -115,7 +117,6 @@
             // 
             // barMoveSpeed
             // 
-            this.barMoveSpeed.Enabled = false;
             this.barMoveSpeed.LargeChange = 1;
             this.barMoveSpeed.Location = new System.Drawing.Point(38, 567);
             this.barMoveSpeed.Maximum = 11;
@@ -141,7 +142,7 @@
             this.exeption_label.AutoSize = true;
             this.exeption_label.BackColor = System.Drawing.SystemColors.Window;
             this.exeption_label.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.exeption_label.Location = new System.Drawing.Point(12, 485);
+            this.exeption_label.Location = new System.Drawing.Point(613, 240);
             this.exeption_label.Name = "exeption_label";
             this.exeption_label.Size = new System.Drawing.Size(21, 13);
             this.exeption_label.TabIndex = 15;
@@ -169,7 +170,6 @@
             // btnSetColor
             // 
             this.btnSetColor.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.btnSetColor.Enabled = false;
             this.btnSetColor.Location = new System.Drawing.Point(348, 567);
             this.btnSetColor.Name = "btnSetColor";
             this.btnSetColor.Size = new System.Drawing.Size(50, 50);
@@ -205,11 +205,35 @@
             this.btn_Delete_Shape.UseVisualStyleBackColor = true;
             this.btn_Delete_Shape.Click += new System.EventHandler(this.btn_Delete_Sel_Shape);
             // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.BackColor = System.Drawing.SystemColors.Window;
+            this.label6.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.label6.Location = new System.Drawing.Point(597, 493);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(12, 13);
+            this.label6.TabIndex = 22;
+            this.label6.Text = "x";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.BackColor = System.Drawing.SystemColors.Window;
+            this.label7.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.label7.Location = new System.Drawing.Point(9, 7);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(12, 13);
+            this.label7.TabIndex = 23;
+            this.label7.Text = "y";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(725, 716);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.label6);
             this.Controls.Add(this.btn_Delete_Shape);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label2);
@@ -251,6 +275,8 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button btn_Delete_Shape;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label7;
     }
 }
 

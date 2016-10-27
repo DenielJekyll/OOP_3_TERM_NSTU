@@ -15,6 +15,18 @@ namespace WindowsFormsApplication3
         private ArrayList figures = new ArrayList();
         private Point[] temp_points = new Point[4];
         private bool flag_input = false;// триггер для произвольного ввода точек
+        private Shape GLOBAL = new Shape();
+        private int pointer_shape = 0;
+
+        /*
+         Список известных ошибок:
+         - если при задании точек все точки будут лежать на одной прямой => вылет
+         Тест: не проверено
+
+        - если задать все 3 точки как одну (т.е. жать в одну точку 3 раза), то значение t = NaN; 
+        функция myMouse() -> left button
+        Тест: вставлен костыль try - cath 
+         */
 
         public Form1()
         {
@@ -22,6 +34,7 @@ namespace WindowsFormsApplication3
             field.InitializeContexts();
             field.MouseWheel += field_Mouse_Wheel;
         }
+
         private void Form1_Load(object sender, EventArgs e)
         {
             for (int i = 0; i < 3; i++)
@@ -52,34 +65,24 @@ namespace WindowsFormsApplication3
             // очищение текущей матрицы 
             Gl.glLoadIdentity();
             // помещаем состояние матрицы в стек матриц 
-           
+
+            Gl.glBegin(Gl.GL_LINES);
+            Gl.glColor3d(0, 0, 0);
+            Gl.glVertex2d(0.5, 0.5);
+            Gl.glVertex2d(0.5, field.Height);
+            Gl.glVertex2d(0.5, 0.5);
+            Gl.glVertex2d(field.Width, 0.5);
+            Gl.glEnd();
             if (count_figures > 0)
             {
-                /*
-                 Список известных ошибок:
-                 - центр вращения "не пересчитывается" после сдвига фигуры по x || y
-                 Тест: создать фигуру, задать центр, убрать руку от мыши, повращать, 
-                 убедиться, что вращение проиходит вокруг выбранной точки, сдвинуть фигуру по x и повращать заного.
-                 Важный момент, точка которая является центром будет смещена на ваш сдвиг, 
-                 но вращение будет происходить относительно старой точки, где ваш курсов мыши.
-
-                 - если повернуть фигуру на 180, то происходит эффект инверсии(движение верх это движение вниз)
-                 Тест: создать фигуру, задать центр, сделать поворот фигуры на 180, попытаться сдвинуть по x || y.
-
-                 - если при задании точек все точки будут лежать на одной прямой => вылет
-                 Тест: не проверено
-
-                - если задать все 3 точки как одну (т.е. жать в одну точку 3 раза), то значение t = NaN; 
-                функция myMouse() -> left button
-                Тест: вставлен костыль try - cath 
-                 */
                 foreach (Shape temp in figures)
                 {
+
                     Gl.glPushMatrix();
-                    Gl.glTranslated(temp.center.X, temp.center.Y, 0.0f);
-                    Gl.glRotated(temp.angle, 0, 0, 1);
-                    Gl.glScaled(temp.scale, temp.scale, 1);
                     Gl.glTranslated(temp.translate.X, temp.translate.Y, 0.0f);
+                    Gl.glTranslated(temp.center.X, temp.center.Y, 0.0f);
+                    Gl.glScaled(temp.scale, temp.scale, 1);
+                    Gl.glRotated(temp.angle, 0, 0, 1);
                     Gl.glTranslated(-temp.center.X, -temp.center.Y, 0.0f);
                     Point[] points = temp.static_points;
                     Gl.glBegin(Gl.GL_POLYGON);
@@ -89,21 +92,23 @@ namespace WindowsFormsApplication3
                     Gl.glVertex2f(points[1].X, points[1].Y);
                     Gl.glVertex2f(points[2].X, points[2].Y);
                     Gl.glEnd();
+                    if (temp.active)
+                    {
+                        Gl.glLineWidth(3f);
+                        Gl.glColor3ub((byte)(255-temp.color.R), (byte)(255-temp.color.G), (byte)(255-temp.color.B));
+                        Gl.glBegin(Gl.GL_LINE_LOOP);
+                        Gl.glVertex2f(points[3].X, points[3].Y);
+                        Gl.glVertex2f(points[0].X, points[0].Y);
+                        Gl.glVertex2f(points[1].X, points[1].Y);
+                        Gl.glVertex2f(points[2].X, points[2].Y);
+                        Gl.glEnd();
+                        Gl.glBegin(Gl.GL_POINTS);
+                        Gl.glColor3d(0, 0, 0);
+                        Gl.glVertex2d(temp.center.X, temp.center.Y);
+                        Gl.glEnd();
+                    }
                     Gl.glPopMatrix();
                 }
-                try
-                {
-                    Shape f = (Shape)figures[Convert.ToInt32(cboxCountFigures.Text)];
-                    Gl.glBegin(Gl.GL_POINTS);
-                    Gl.glColor3d(255, 0, 0);
-                    Gl.glVertex2d(f.center.X, f.center.Y);
-                    Gl.glEnd();
-                }
-                catch (Exception)
-                {
-                    
-                }
-                
             }
             if (flag_input)
             {
@@ -111,16 +116,42 @@ namespace WindowsFormsApplication3
                 Gl.glColor3d(0, 0, 0);
                 Gl.glVertex2d(temp_points[0].X, temp_points[0].Y);
                 Gl.glVertex2d(temp_points[1].X, temp_points[1].Y);
-                Gl.glVertex2d(temp_points[2].X, temp_points[2].Y);
                 Gl.glEnd();
-             }
-                
-            // возвращаем состояние матрицы 
-            
+                if (count_click > 1)
+                {
+                    Gl.glColor3d(0, 0, 0);
+                    Gl.glEnable(Gl.GL_LINE_STIPPLE);
+                    Gl.glLineStipple(2, 0x0103);
+                    Gl.glBegin(Gl.GL_LINE_LOOP);
+                    Gl.glVertex2f(GLOBAL.static_points[3].X, GLOBAL.static_points[3].Y);
+                    Gl.glVertex2f(GLOBAL.static_points[0].X, GLOBAL.static_points[0].Y);
+                    Gl.glVertex2f(GLOBAL.static_points[1].X, GLOBAL.static_points[1].Y);
+                    Gl.glVertex2f(GLOBAL.static_points[2].X, GLOBAL.static_points[2].Y);
+                    Gl.glEnd();
+                    Gl.glDisable(Gl.GL_LINE_STIPPLE);
+                }
+            }
             // отрисовываем геометрию 
             Gl.glFlush();
             // обновляем состояние элемента 
             field.Invalidate();
+
+        }
+
+        private void PrintText2D(double x, double y, string text)
+        {
+
+            // устанавливаем позицию вывода растровых символов 
+            // в переданных координатах x и y. 
+            Gl.glRasterPos2d(x, y);
+
+            // в цикле foreach перебираем значения из массива text, 
+            // который содержит значение строки для визуализации 
+            foreach (char char_for_draw in text)
+            {
+                // символ C визуализируем с помощью функции glutBitmapCharacter, используя шрифт GLUT_BITMAP_9_BY_15. 
+                Glut.glutBitmapCharacter(Glut.GLUT_BITMAP_9_BY_15, char_for_draw);
+            }
 
         }
 
@@ -134,7 +165,7 @@ namespace WindowsFormsApplication3
         {
             if (count_figures > 0)
             {
-                Shape temp = (Shape)figures[Convert.ToInt32(cboxCountFigures.Text)];
+                Shape temp = (Shape)figures[pointer_shape];
                 switch (e.KeyCode)
                 {
                     // W A S D отвечают за перемещение по x и y 
@@ -161,6 +192,30 @@ namespace WindowsFormsApplication3
             }
         }
 
+        private void field_Mouse_Move(object sender, MouseEventArgs e)
+        {
+            if (flag_input)
+                if (count_click > 1)
+                {
+                    temp_points[2].X = e.X;
+                    temp_points[2].Y = field.Height - e.Y;
+                    try
+                    {
+                        double t = (double)(temp_points[0].Y - temp_points[2].Y) / (temp_points[0].Y - temp_points[1].Y - temp_points[2].Y + temp_points[1].Y);
+                        temp_points[3].X = temp_points[0].X + Convert.ToInt32((temp_points[2].X - temp_points[1].X) * t);
+                        temp_points[3].Y = temp_points[0].Y + Convert.ToInt32((temp_points[2].Y - temp_points[1].Y) * t);
+                        GLOBAL.static_points = temp_points;
+
+                    }
+                    catch (Exception)
+                    {
+                        exeption_label.Text = "error t";
+                    }
+                    
+                }
+
+        }
+
         private void field_Mouse_Click(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -180,19 +235,15 @@ namespace WindowsFormsApplication3
                         temp_points[count_click].Y = field.Height - e.Y;
                         count_click = 0;
                         flag_input = false;
-                        if ((temp_points[2].X - temp_points[0].X) * (temp_points[1].Y - temp_points[0].Y) - (temp_points[2].Y - temp_points[0].Y) * (temp_points[1].X - temp_points[0].X) < 0)
-                        {
-                            Point p = temp_points[2];
-                            temp_points[2] = temp_points[1];
-                            temp_points[1] = p;
-                        }
-                        //warning t = NaN
                         try
                         {
                             double t = (double)(temp_points[0].Y - temp_points[2].Y) / (temp_points[0].Y - temp_points[1].Y - temp_points[2].Y + temp_points[1].Y);
                             temp_points[3].X = temp_points[0].X + Convert.ToInt32((temp_points[2].X - temp_points[1].X) * t);
                             temp_points[3].Y = temp_points[0].Y + Convert.ToInt32((temp_points[2].Y - temp_points[1].Y) * t);
-                            figures.Add(new Shape(temp_points));
+                            t = (double)(temp_points[1].Y - temp_points[2].Y) / (temp_points[2].Y - temp_points[0].Y - temp_points[1].Y + temp_points[3].Y);
+                            figures.Add(new Shape(temp_points, new Point(temp_points[1].X + Convert.ToInt32((temp_points[1].X - temp_points[3].X) * t),
+                            temp_points[1].Y + Convert.ToInt32((temp_points[1].Y - temp_points[3].Y) * t))));
+                         
                             //исправить
                             barMoveSpeed.Enabled = true;
                             barRotatingSpeed.Enabled = true;
@@ -213,13 +264,14 @@ namespace WindowsFormsApplication3
                     }
                 }
             }
-            if (e.Button == MouseButtons.Right)
-                if (count_figures > 0)
-                {
-                    //center_label.Text = "(" + e.X + ", " + (field.Height - e.Y) + ")";
-                    Shape temp = (Shape)figures[Convert.ToInt32(cboxCountFigures.Text)];
-                    temp.center = new Point(e.X, field.Height - e.Y);
-                }
+            //if (e.Button == MouseButtons.Right)
+            //    if (count_figures > 0)
+            //    {
+            //        //center_label.Text = "(" + e.X + ", " + (field.Height - e.Y) + ")";
+            //        Shape temp = (Shape)figures[pointer_shape];
+            //        temp.center = new Point(e.X, field.Height - e.Y);
+            //        exeption_label.Text = e.X + " " + (field.Height - e.Y);
+            //    }
         }
 
         private void field_Mouse_Wheel(object sender, MouseEventArgs e)
@@ -227,7 +279,7 @@ namespace WindowsFormsApplication3
             if (count_figures > 0)
 
             {
-                Shape temp = (Shape)figures[Convert.ToInt32(cboxCountFigures.Text)];
+                Shape temp = (Shape)figures[pointer_shape];
                 if (e.Delta > 0)
                     if (count_figures > 0)
                         temp.scale = -0.05;
@@ -241,6 +293,7 @@ namespace WindowsFormsApplication3
         {
             Draw();
         }
+
         //*************                 **************
 
 
@@ -248,31 +301,40 @@ namespace WindowsFormsApplication3
         //************* элементы нижней панели **************
         private void rotating_Speed_Change(object sender, EventArgs e)
         {
-            Shape temp = (Shape)figures[Convert.ToInt32(cboxCountFigures.Text)];
-            temp.rotating_speed = barRotatingSpeed.Value;
-            field.Focus();
+            if (count_figures > 0)
+            {
+                Shape temp = (Shape)figures[pointer_shape];
+                temp.rotating_speed = barRotatingSpeed.Value;
+                field.Focus();
+            }
         }
 
         private void move_Speed_Change(object sender, EventArgs e)
         {
-            Shape temp = (Shape)figures[Convert.ToInt32(cboxCountFigures.Text)];
-            temp.move_speed = barMoveSpeed.Value;
-            field.Focus();
+            if (count_figures > 0)
+            {
+                Shape temp = (Shape)figures[pointer_shape];
+                temp.move_speed = barMoveSpeed.Value;
+                field.Focus();
+            }
         }
 
         private void btn_Set_Color_Click(object sender, EventArgs e)
         {
-            Shape temp = (Shape)figures[Convert.ToInt32(cboxCountFigures.Text)];
-            ColorDialog MyDialog = new ColorDialog();
-            MyDialog.AllowFullOpen = false;
-            MyDialog.ShowHelp = true;
-            MyDialog.Color = temp.color;
-            if (MyDialog.ShowDialog() == DialogResult.OK)
+            if (count_figures > 0)
             {
-                btnSetColor.BackColor = MyDialog.Color;
-                temp.color = MyDialog.Color;
+                Shape temp = (Shape)figures[pointer_shape];
+                ColorDialog MyDialog = new ColorDialog();
+                MyDialog.AllowFullOpen = false;
+                MyDialog.ShowHelp = true;
+                MyDialog.Color = temp.color;
+                if (MyDialog.ShowDialog() == DialogResult.OK)
+                {
+                    btnSetColor.BackColor = MyDialog.Color;
+                    temp.color = MyDialog.Color;
+                }
+                field.Focus();
             }
-            field.Focus();
         }
         //*************               **************
 
@@ -300,19 +362,29 @@ namespace WindowsFormsApplication3
 
         private void cbox_Selected_Item_Change(object sender, EventArgs e)
         {
-            Shape temp = (Shape)figures[Convert.ToInt32(cboxCountFigures.Text)];
-            barMoveSpeed.Value = temp.move_speed;
-            barRotatingSpeed.Value = temp.rotating_speed;
-            btnSetColor.BackColor = temp.color;
-            field.Focus();
+        
+          Shape temp = (Shape)figures[pointer_shape];
+          temp.active = false;
+          pointer_shape = Convert.ToInt32(cboxCountFigures.Text);
+          temp = (Shape)figures[pointer_shape];
+          temp.active = true;
+          barMoveSpeed.Value = temp.move_speed;
+          barRotatingSpeed.Value = temp.rotating_speed;
+          btnSetColor.BackColor = temp.color;
+          field.Focus();
+
         }
 
-        //не работает
         private void btn_Delete_Sel_Shape(object sender, EventArgs e)
         {
-            //count_figures--;
-            //figures.Remove(Convert.ToInt32(cboxCountFigures.Text));
-            //cboxCountFigures.Items.Remove(cboxCountFigures.SelectedItem);
+            if (count_figures > 0)
+            {
+                figures.Remove((Shape)figures[pointer_shape]);
+                cboxCountFigures.Items.RemoveAt((int)count_figures - 1);
+                count_figures--;
+                pointer_shape = ((int)count_figures - 1 < 0) ? 0 : (int)count_figures - 1;
+            }
+            
         }
         //*************               **************
     }
@@ -324,6 +396,7 @@ namespace WindowsFormsApplication3
         public Color color { set; get; }
         public Point center { set; get; }
         public double angle { set; get; }
+        public bool active { set; get; }
         public int move_speed { set; get; }
         public int rotating_speed { set; get; }
         public Point[] static_points { set; get; }
@@ -344,17 +417,18 @@ namespace WindowsFormsApplication3
 
             static_points[3].X = 400;
             static_points[3].Y = 200;
-            
+            active = true;
             angle = 0;
             move_speed = 2;
             rotating_speed = 1;
-            center = new Point(0,0);
+            center = new Point(322,253);
             _translate = new Point(0, 0);
-            color = Color.Empty;
+            Random rand = new Random();
+            color = Color.FromArgb(rand.Next(256), rand.Next(256), rand.Next(256));
             scale = 1;
         }
 
-        public Shape(Point[] new_points)
+        public Shape(Point[] new_points, Point c)
         {
             static_points = new Point[4];
             static_points[0].X = new_points[0].X;
@@ -368,13 +442,14 @@ namespace WindowsFormsApplication3
 
             static_points[3].X = new_points[3].X;
             static_points[3].Y = new_points[3].Y;
-            
+            active = true;
             angle = 0;
             move_speed = 2;
             rotating_speed = 1;
             scale = 1;
-            color = Color.Empty;
-            center = new Point(0, 0);
+            Random rand = new Random();
+            color = Color.FromArgb(rand.Next(256), rand.Next(256), rand.Next(256));
+            center = c;
             _translate = new Point(0, 0);
         }
 

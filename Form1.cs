@@ -116,21 +116,32 @@ namespace WindowsFormsApplication3
                 Gl.glVertex2d(temp_points[0].X, temp_points[0].Y);
                 Gl.glVertex2d(temp_points[1].X, temp_points[1].Y);
                 Gl.glEnd();
-
+                Gl.glColor3d(0, 0, 0);
+                Gl.glEnable(Gl.GL_LINE_STIPPLE);
+                Gl.glLineStipple(2, 0x0103);
                 if (count_click > 1)
-                {
-                    Gl.glColor3d(0, 0, 0);
-                    Gl.glEnable(Gl.GL_LINE_STIPPLE);
-                    Gl.glLineStipple(2, 0x0103);
-                    Gl.glBegin(Gl.GL_LINE_LOOP);
-                    //Gl.glVertex2f(GLOBAL.static_points[0].X, GLOBAL.static_points[0].Y);
-                    Gl.glVertex2f(GLOBAL.static_points[1].X, GLOBAL.static_points[1].Y);
-                    Gl.glVertex2f(GLOBAL.static_points[3].X, GLOBAL.static_points[3].Y);
-                    Gl.glVertex2f(GLOBAL.static_points[2].X, GLOBAL.static_points[2].Y);
-                    Gl.glVertex2f(GLOBAL.static_points[4].X, GLOBAL.static_points[4].Y);
-                    Gl.glEnd();
-                    Gl.glDisable(Gl.GL_LINE_STIPPLE);
-                }
+                    switch (cboxSelectedType.Text.Length)
+                    {
+                    case PARALLELOGRAM:
+                            Gl.glBegin(Gl.GL_LINE_LOOP);
+                            Gl.glVertex2f(GLOBAL.static_points[0].X, GLOBAL.static_points[0].Y);
+                            Gl.glVertex2f(GLOBAL.static_points[1].X, GLOBAL.static_points[1].Y);
+                            Gl.glVertex2f(GLOBAL.static_points[2].X, GLOBAL.static_points[2].Y);
+                            Gl.glVertex2f(GLOBAL.static_points[3].X, GLOBAL.static_points[3].Y);
+                            Gl.glEnd();
+                        break;
+                        case RHOMBUS:
+                            Gl.glBegin(Gl.GL_LINE_LOOP);
+                            Gl.glVertex2f(GLOBAL.static_points[1].X, GLOBAL.static_points[1].Y);
+                            Gl.glVertex2f(GLOBAL.static_points[3].X, GLOBAL.static_points[3].Y);
+                            Gl.glVertex2f(GLOBAL.static_points[2].X, GLOBAL.static_points[2].Y);
+                            Gl.glVertex2f(GLOBAL.static_points[4].X, GLOBAL.static_points[4].Y);
+                            Gl.glEnd();
+                            break;
+                    default:
+                        break;
+                    }
+                Gl.glDisable(Gl.GL_LINE_STIPPLE);
             }
             // отрисовываем геометрию 
             Gl.glFlush();
@@ -389,7 +400,7 @@ namespace WindowsFormsApplication3
                             }
                             break;
                         case RHOMBUS:
-                            t = Math.Sqrt(Math.Pow(e.X - temp_points[0].X, 2) + Math.Pow(e.Y - temp_points[0].Y, 2));
+                            t = Math.Sqrt(Math.Pow(e.X - temp_points[0].X, 2) + Math.Pow(field.Height - e.Y - temp_points[0].Y, 2));
                             double u;
                             double pX, pY;
                             u = Math.Acos((temp_points[1].X - temp_points[0].X) / Math.Sqrt(Math.Pow((temp_points[1].X - temp_points[0].X), 2) + Math.Pow((temp_points[1].Y - temp_points[0].Y), 2))) + Math.PI / 2;

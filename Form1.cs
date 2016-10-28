@@ -13,7 +13,7 @@ namespace WindowsFormsApplication3
         private short count_click = 0;
         private uint count_figures = 0;
         private ArrayList figures = new ArrayList();
-        private Point[] temp_points = new Point[5];
+        private Point[] temp_points = new Point[6];
         private bool flag_input = false;// триггер для произвольного ввода точек
         private Shape GLOBAL = new Shape();
         private int pointer_shape = 0;
@@ -136,6 +136,15 @@ namespace WindowsFormsApplication3
                             Gl.glVertex2f(GLOBAL.static_points[3].X, GLOBAL.static_points[3].Y);
                             Gl.glVertex2f(GLOBAL.static_points[2].X, GLOBAL.static_points[2].Y);
                             Gl.glVertex2f(GLOBAL.static_points[4].X, GLOBAL.static_points[4].Y);
+                            Gl.glEnd();
+                            break;
+                        case PENTAGON:
+                            Gl.glBegin(Gl.GL_LINE_LOOP);
+                            Gl.glVertex2f(GLOBAL.static_points[1].X, GLOBAL.static_points[1].Y);
+                            Gl.glVertex2f(GLOBAL.static_points[2].X, GLOBAL.static_points[2].Y);
+                            Gl.glVertex2f(GLOBAL.static_points[3].X, GLOBAL.static_points[3].Y);
+                            Gl.glVertex2f(GLOBAL.static_points[4].X, GLOBAL.static_points[4].Y);
+                            Gl.glVertex2f(GLOBAL.static_points[5].X, GLOBAL.static_points[5].Y);
                             Gl.glEnd();
                             break;
                     default:
@@ -272,7 +281,7 @@ namespace WindowsFormsApplication3
                 }
                 catch (Exception)
                 {
-                    exeption_label.Text = "Warning t = NaN Введите точки заного";
+                    exeption_label.Text = "Некоректно заданы точки, фигура не построена";
                     for (int i = 0; i < 5; i++)
                         temp_points[i] = new Point(-1, -1);
                 }
@@ -281,7 +290,49 @@ namespace WindowsFormsApplication3
         }
 
         private void create_Ellipse(MouseEventArgs e) { }
-        private void create_Pentagon(MouseEventArgs e) { }
+
+        private void create_Pentagon(MouseEventArgs e)
+        {
+            if (count_click < 2)
+            {
+                temp_points[count_click].X = e.X;
+                temp_points[count_click].Y = field.Height - e.Y;
+                count_click++;
+            }
+            else
+            {
+                temp_points[count_click].X = e.X;
+                temp_points[count_click].Y = field.Height - e.Y;
+                count_click = 0;
+                flag_input = false;
+                lock_Interface(true);
+                try { 
+                double u, t;
+                double pX, pY;
+                t = Math.Sqrt(Math.Pow(e.X - temp_points[0].X, 2) + Math.Pow(field.Height - e.Y - temp_points[0].Y, 2));
+                u = Math.Acos((temp_points[1].X - temp_points[0].X) / Math.Sqrt(Math.Pow((temp_points[1].X - temp_points[0].X), 2) + Math.Pow((temp_points[1].Y - temp_points[0].Y), 2)));
+                for (int i = 1; i < 6; i++)
+                {
+                    pX = Math.Cos(u);
+                    pY = Math.Sin(u);
+                    temp_points[i].X = temp_points[0].X + Convert.ToInt32(pX * t);
+                    temp_points[i].Y = temp_points[0].Y + Convert.ToInt32(pY * t);
+                    u += Math.PI * 0.4;
+                }
+
+                figures.Add(new Pentagon(temp_points));
+                cboxCountFigures.Items.Add(count_figures++);
+                cboxCountFigures.SelectedItem = count_figures - 1;
+                }
+                catch (Exception)
+                {
+                    exeption_label.Text = "Некоректно заданы точки, фигура не построена";
+                }
+                for (int i = 0; i < 6; i++)
+                    temp_points[i] = new Point(-1, -1);
+            }
+
+        }
 
         private void create_Rhombus(MouseEventArgs e)
         {
@@ -301,6 +352,8 @@ namespace WindowsFormsApplication3
 
                 double u, t;
                 double pX, pY;
+                try
+                {
                 u = Math.Acos((temp_points[1].X - temp_points[0].X) / Math.Sqrt(Math.Pow((temp_points[1].X - temp_points[0].X), 2) + Math.Pow((temp_points[1].Y - temp_points[0].Y), 2))) + Math.PI / 2;
                 pX = Math.Cos(u);
                 pY = Math.Sin(u);
@@ -317,6 +370,11 @@ namespace WindowsFormsApplication3
                 figures.Add(new Rhombus(temp_points));
                 cboxCountFigures.Items.Add(count_figures++);
                 cboxCountFigures.SelectedItem = count_figures - 1;
+                }
+                catch (Exception)
+                {
+                    exeption_label.Text = "Некоректно заданы точки, фигура не построена";
+                }
                 for (int i = 0; i < 5; i++)
                     temp_points[i] = new Point(-1, -1);
             }
@@ -378,7 +436,9 @@ namespace WindowsFormsApplication3
 
         private void field_Mouse_Move(object sender, MouseEventArgs e)
         {
-            double t;
+            double t, u, pX, pY;
+            try
+            {
             if (flag_input)
                 if (count_click > 1)
                     switch (cboxSelectedType.Text.Length)
@@ -386,23 +446,13 @@ namespace WindowsFormsApplication3
                         case PARALLELOGRAM:
                             temp_points[2].X = e.X;
                             temp_points[2].Y = field.Height - e.Y;
-                            try
-                            {
-                                t = (double)(temp_points[0].Y - temp_points[2].Y) / (temp_points[0].Y - temp_points[1].Y - temp_points[2].Y + temp_points[1].Y);
-                                temp_points[3].X = temp_points[0].X + Convert.ToInt32((temp_points[2].X - temp_points[1].X) * t);
-                                temp_points[3].Y = temp_points[0].Y + Convert.ToInt32((temp_points[2].Y - temp_points[1].Y) * t);
-                                GLOBAL.static_points = temp_points;
-
-                            }
-                            catch (Exception)
-                            {
-                                exeption_label.Text = "error t";
-                            }
+                            t = (double)(temp_points[0].Y - temp_points[2].Y) / (temp_points[0].Y - temp_points[1].Y - temp_points[2].Y + temp_points[1].Y);
+                            temp_points[3].X = temp_points[0].X + Convert.ToInt32((temp_points[2].X - temp_points[1].X) * t);
+                            temp_points[3].Y = temp_points[0].Y + Convert.ToInt32((temp_points[2].Y - temp_points[1].Y) * t);
                             break;
                         case RHOMBUS:
                             t = Math.Sqrt(Math.Pow(e.X - temp_points[0].X, 2) + Math.Pow(field.Height - e.Y - temp_points[0].Y, 2));
-                            double u;
-                            double pX, pY;
+
                             u = Math.Acos((temp_points[1].X - temp_points[0].X) / Math.Sqrt(Math.Pow((temp_points[1].X - temp_points[0].X), 2) + Math.Pow((temp_points[1].Y - temp_points[0].Y), 2))) + Math.PI / 2;
                             pX = Math.Cos(u);
                             pY = Math.Sin(u);
@@ -415,11 +465,28 @@ namespace WindowsFormsApplication3
 
                             temp_points[4].X = temp_points[0].X + Convert.ToInt32(pX * (-t));
                             temp_points[4].Y = temp_points[0].Y + Convert.ToInt32(pY * (-t));
-                            GLOBAL.static_points = temp_points;
+                            break;
+                        case PENTAGON:
+                            t = Math.Sqrt(Math.Pow(e.X - temp_points[0].X, 2) + Math.Pow(field.Height - e.Y - temp_points[0].Y, 2));
+                            u = Math.Acos((temp_points[1].X - temp_points[0].X) / Math.Sqrt(Math.Pow((temp_points[1].X - temp_points[0].X), 2) + Math.Pow((temp_points[1].Y - temp_points[0].Y), 2)));
+                            for (int i = 1; i < 6; i++)
+                            {
+                                pX = Math.Cos(u);
+                                pY = Math.Sin(u);
+                                temp_points[i].X = temp_points[0].X + Convert.ToInt32(pX * t);
+                                temp_points[i].Y = temp_points[0].Y + Convert.ToInt32(pY * t);
+                                u += Math.PI * 0.4;
+                            }
                             break;
                         default:
                             break;
                     }
+                GLOBAL.static_points = temp_points;
+            }
+            catch (Exception)
+            {
+                GLOBAL.static_points = temp_points;
+            }
 
         }
 
@@ -435,6 +502,9 @@ namespace WindowsFormsApplication3
                             break;
                         case RHOMBUS:
                             create_Rhombus(e);
+                            break;
+                        case PENTAGON:
+                            create_Pentagon(e);
                             break;
                         default:
                             exeption_label.Text = "Ошибка не выбран тип создаваемой фигуры";
@@ -700,27 +770,28 @@ namespace WindowsFormsApplication3
             
         }
 
-        public Pentagon(Point[] new_points, Point c)
+        public Pentagon(Point[] new_points)
         {
             static_points = new Point[5];
-            static_points[0].X = new_points[0].X;
-            static_points[0].Y = new_points[0].Y;
+            static_points[0].X = new_points[1].X;
+            static_points[0].Y = new_points[1].Y;
 
-            static_points[1].X = new_points[1].X;
-            static_points[1].Y = new_points[1].Y;
+            static_points[1].X = new_points[2].X;
+            static_points[1].Y = new_points[2].Y;
 
-            static_points[2].X = new_points[2].X;
-            static_points[2].Y = new_points[2].Y;
+            static_points[2].X = new_points[3].X;
+            static_points[2].Y = new_points[3].Y;
 
-            static_points[3].X = new_points[3].X;
-            static_points[3].Y = new_points[3].Y;
+            static_points[3].X = new_points[4].X;
+            static_points[3].Y = new_points[4].Y;
 
-            static_points[4].X = new_points[4].X;
-            static_points[4].Y = new_points[4].Y;
+            static_points[4].X = new_points[5].X;
+            static_points[4].Y = new_points[5].Y;
 
+            type = 8;
             angle = 0;
             scale = 1;
-            center = c;
+            center = new Point(new_points[0].X, new_points[0].Y);
             active = true;
             move_speed = 2;
             rotating_speed = 1;

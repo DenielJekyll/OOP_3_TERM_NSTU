@@ -143,7 +143,7 @@
             this.exeption_label.AutoSize = true;
             this.exeption_label.BackColor = System.Drawing.SystemColors.Window;
             this.exeption_label.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.exeption_label.Location = new System.Drawing.Point(613, 267);
+            this.exeption_label.Location = new System.Drawing.Point(232, 526);
             this.exeption_label.Name = "exeption_label";
             this.exeption_label.Size = new System.Drawing.Size(21, 13);
             this.exeption_label.TabIndex = 15;

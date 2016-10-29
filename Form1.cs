@@ -357,7 +357,7 @@ namespace WindowsFormsApplication3
                 u = Math.Acos((temp_points[1].X - temp_points[0].X) / Math.Sqrt(Math.Pow((temp_points[1].X - temp_points[0].X), 2) + Math.Pow((temp_points[1].Y - temp_points[0].Y), 2))) + Math.PI / 2;
                 pX = Math.Cos(u);
                 pY = Math.Sin(u);
-                t = Math.Sqrt(Math.Pow(e.X - temp_points[0].X, 2) + Math.Pow(e.Y - temp_points[0].Y, 2));
+                t = Math.Sqrt(Math.Pow(e.X - temp_points[0].X, 2) + Math.Pow(field.Height - e.Y - temp_points[0].Y, 2));
                 temp_points[2].X = temp_points[0].X + temp_points[0].X - temp_points[1].X;
                 temp_points[2].Y = temp_points[0].Y + temp_points[0].Y - temp_points[1].Y;
 

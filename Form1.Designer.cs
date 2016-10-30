@@ -51,6 +51,7 @@
             this.файлToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.дополнительноToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.сортировкаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.barRotatingSpeed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.barMoveSpeed)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -71,7 +72,6 @@
             this.field.Size = new System.Drawing.Size(600, 500);
             this.field.StencilBits = ((byte)(0));
             this.field.TabIndex = 0;
-            this.field.Load += new System.EventHandler(this.field_Load);
             this.field.KeyDown += new System.Windows.Forms.KeyEventHandler(this.field_Key_Down);
             this.field.MouseClick += new System.Windows.Forms.MouseEventHandler(this.field_Mouse_Click);
             this.field.MouseMove += new System.Windows.Forms.MouseEventHandler(this.field_Mouse_Move);
@@ -275,15 +275,26 @@
             // сортировкаToolStripMenuItem
             // 
             this.сортировкаToolStripMenuItem.Name = "сортировкаToolStripMenuItem";
-            this.сортировкаToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.сортировкаToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
             this.сортировкаToolStripMenuItem.Text = "Сортировка";
             this.сортировкаToolStripMenuItem.Click += new System.EventHandler(this.сортировкаToolStripMenuItem_Click);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(627, 287);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 26;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.input);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(725, 716);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.cboxSelectedType);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
@@ -339,6 +350,7 @@
         private System.Windows.Forms.ToolStripMenuItem файлToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem дополнительноToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem сортировкаToolStripMenuItem;
+        private System.Windows.Forms.Button button1;
     }
 }
 

@@ -47,8 +47,13 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.cboxSelectedType = new System.Windows.Forms.ComboBox();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.файлToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.дополнительноToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.сортировкаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.barRotatingSpeed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.barMoveSpeed)).BeginInit();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // field
@@ -61,7 +66,7 @@
             this.field.BackColor = System.Drawing.SystemColors.AppWorkspace;
             this.field.ColorBits = ((byte)(32));
             this.field.DepthBits = ((byte)(16));
-            this.field.Location = new System.Drawing.Point(7, 8);
+            this.field.Location = new System.Drawing.Point(7, 23);
             this.field.Name = "field";
             this.field.Size = new System.Drawing.Size(600, 500);
             this.field.StencilBits = ((byte)(0));
@@ -73,7 +78,7 @@
             // 
             // btnCreatePrimitive
             // 
-            this.btnCreatePrimitive.Location = new System.Drawing.Point(614, 39);
+            this.btnCreatePrimitive.Location = new System.Drawing.Point(614, 50);
             this.btnCreatePrimitive.Name = "btnCreatePrimitive";
             this.btnCreatePrimitive.Size = new System.Drawing.Size(104, 38);
             this.btnCreatePrimitive.TabIndex = 2;
@@ -130,7 +135,7 @@
             // 
             // btnCreateArbitrarily
             // 
-            this.btnCreateArbitrarily.Location = new System.Drawing.Point(614, 83);
+            this.btnCreateArbitrarily.Location = new System.Drawing.Point(614, 94);
             this.btnCreateArbitrarily.Name = "btnCreateArbitrarily";
             this.btnCreateArbitrarily.Size = new System.Drawing.Size(104, 38);
             this.btnCreateArbitrarily.TabIndex = 12;
@@ -143,7 +148,7 @@
             this.exeption_label.AutoSize = true;
             this.exeption_label.BackColor = System.Drawing.SystemColors.Window;
             this.exeption_label.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.exeption_label.Location = new System.Drawing.Point(232, 526);
+            this.exeption_label.Location = new System.Drawing.Point(9, 507);
             this.exeption_label.Name = "exeption_label";
             this.exeption_label.Size = new System.Drawing.Size(21, 13);
             this.exeption_label.TabIndex = 15;
@@ -153,7 +158,7 @@
             // 
             this.cboxCountFigures.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboxCountFigures.FormattingEnabled = true;
-            this.cboxCountFigures.Location = new System.Drawing.Point(614, 166);
+            this.cboxCountFigures.Location = new System.Drawing.Point(614, 177);
             this.cboxCountFigures.Name = "cboxCountFigures";
             this.cboxCountFigures.Size = new System.Drawing.Size(104, 21);
             this.cboxCountFigures.TabIndex = 16;
@@ -162,7 +167,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(613, 130);
+            this.label1.Location = new System.Drawing.Point(613, 141);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(111, 26);
             this.label1.TabIndex = 17;
@@ -198,7 +203,7 @@
             // 
             // btn_Delete_Shape
             // 
-            this.btn_Delete_Shape.Location = new System.Drawing.Point(613, 204);
+            this.btn_Delete_Shape.Location = new System.Drawing.Point(613, 215);
             this.btn_Delete_Shape.Name = "btn_Delete_Shape";
             this.btn_Delete_Shape.Size = new System.Drawing.Size(104, 47);
             this.btn_Delete_Shape.TabIndex = 21;
@@ -211,7 +216,7 @@
             this.label6.AutoSize = true;
             this.label6.BackColor = System.Drawing.SystemColors.Window;
             this.label6.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label6.Location = new System.Drawing.Point(597, 493);
+            this.label6.Location = new System.Drawing.Point(595, 508);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(12, 13);
             this.label6.TabIndex = 22;
@@ -222,7 +227,7 @@
             this.label7.AutoSize = true;
             this.label7.BackColor = System.Drawing.SystemColors.Window;
             this.label7.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.label7.Location = new System.Drawing.Point(9, 7);
+            this.label7.Location = new System.Drawing.Point(9, 23);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(12, 13);
             this.label7.TabIndex = 23;
@@ -237,10 +242,42 @@
             "Пентагон",
             "Эллипс",
             "Ромб"});
-            this.cboxSelectedType.Location = new System.Drawing.Point(614, 12);
+            this.cboxSelectedType.Location = new System.Drawing.Point(614, 23);
             this.cboxSelectedType.Name = "cboxSelectedType";
             this.cboxSelectedType.Size = new System.Drawing.Size(104, 21);
             this.cboxSelectedType.TabIndex = 24;
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.файлToolStripMenuItem,
+            this.дополнительноToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(725, 24);
+            this.menuStrip1.TabIndex = 25;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // файлToolStripMenuItem
+            // 
+            this.файлToolStripMenuItem.Name = "файлToolStripMenuItem";
+            this.файлToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+            this.файлToolStripMenuItem.Text = "Файл";
+            // 
+            // дополнительноToolStripMenuItem
+            // 
+            this.дополнительноToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.сортировкаToolStripMenuItem});
+            this.дополнительноToolStripMenuItem.Name = "дополнительноToolStripMenuItem";
+            this.дополнительноToolStripMenuItem.Size = new System.Drawing.Size(107, 20);
+            this.дополнительноToolStripMenuItem.Text = "Дополнительно";
+            // 
+            // сортировкаToolStripMenuItem
+            // 
+            this.сортировкаToolStripMenuItem.Name = "сортировкаToolStripMenuItem";
+            this.сортировкаToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.сортировкаToolStripMenuItem.Text = "Сортировка";
+            this.сортировкаToolStripMenuItem.Click += new System.EventHandler(this.сортировкаToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -264,11 +301,15 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.btnCreatePrimitive);
             this.Controls.Add(this.field);
+            this.Controls.Add(this.menuStrip1);
+            this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.barRotatingSpeed)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.barMoveSpeed)).EndInit();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -294,6 +335,10 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ComboBox cboxSelectedType;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem файлToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem дополнительноToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem сортировкаToolStripMenuItem;
     }
 }
 

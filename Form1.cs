@@ -6,6 +6,8 @@ using Tao.OpenGl;
 using Tao.FreeGlut;
 using System.Collections;
 
+
+
 namespace WindowsFormsApplication3
 {
     public partial class Form1 : Form
@@ -607,6 +609,13 @@ namespace WindowsFormsApplication3
                 cboxCountFigures.SelectedItem = count_figures - 1;
                 exeption_label.Text = "";
             }
+        }
+
+        private void сортировкаToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form2 f2 = new Form2();
+            f2.figures = this.figures;
+            f2.Show();
         }
 
         private void enable_Input_Shape(object sender, EventArgs e)

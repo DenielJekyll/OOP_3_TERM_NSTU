@@ -400,22 +400,7 @@ namespace WindowsFormsApplication3
 
 
         //************* field обработчики **************
-        private void field_Load(object sender, EventArgs e)
-        {
-            FileStream file = new FileStream("w:\\shapes.txt", FileMode.Create);
-            StreamWriter writer = new StreamWriter(file); 
-            
-            foreach (dynamic temp in figures)
-            {
-                writer.Write("#" + Environment.NewLine+ temp.type + Environment.NewLine);
-                foreach (Point p in temp.static_points)
-                    writer.Write(p.X + " " + p.Y + " ");
-                writer.Write(Environment.NewLine + temp.center.X + " " + temp.center.Y + Environment.NewLine + temp.angle + Environment.NewLine
-                    + temp.move_speed + " " + temp.rotating_speed + Environment.NewLine + temp.color.R + " " + temp.color.G + " " + temp.color.B
-                    + Environment.NewLine + temp.scale + Environment.NewLine + temp.translate.X + " " + temp.translate.Y + Environment.NewLine);
-            }
-            writer.Close(); 
-        }
+
 
         private void shift()
         {
@@ -425,94 +410,7 @@ namespace WindowsFormsApplication3
             }
         }
 
-        private void input(object sender, EventArgs e)
-        {
-            FileStream file = new FileStream("w:\\shapes.txt", FileMode.Open);
-            StreamReader reader = new StreamReader(file);
-            string line;
-            while ((line = reader.ReadLine()) != null)
-            {
-                count_click = 4;
-                if (line != "#")
-                    return;
-                line = reader.ReadLine();
-                int type = Convert.ToInt32(line);
-                line = reader.ReadLine();
-                string [] s = line.Split(' ');
-                for (int C = 0; s[C] != ""; C++)
-                    if (C % 2 == 0)
-                        temp_points[C/2].X = Convert.ToInt32(s[C]);
-                    else
-                        temp_points[(C - 1)/2].Y = Convert.ToInt32(s[C]);
-                line = reader.ReadLine();
-                switch (type)
-                {
-                    case PARALLELOGRAM:
-                        Parallelogram p = new Parallelogram(temp_points, new Point(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1])));
-                        p.angle = Convert.ToDouble(reader.ReadLine());
-                        line = reader.ReadLine();
-                        p.rotating_speed = Convert.ToInt32(line.Split(' ')[1]);
-                        p.move_speed = Convert.ToInt32(line.Split(' ')[0]);
-                        line = reader.ReadLine();
-                        p.color = Color.FromArgb(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]), Convert.ToInt32(line.Split(' ')[2]));
-                        p.scale = Convert.ToDouble(reader.ReadLine());
-                        line = reader.ReadLine();
-                        p.setTranslate(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
-                        figures.Add(p);
-                        cboxCountFigures.Items.Add(count_figures++);
-                        cboxCountFigures.SelectedItem = count_figures - 1;
-                        for (int i = 0; i < 5; i++)
-                            temp_points[i] = new Point(-1, -1);
-                        break;
-                    case PENTAGON:
-                        shift();
-                        Pentagon pentagon = new Pentagon(temp_points);
-                        Point center = new Point(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
-                        pentagon.center = center;
-                        pentagon.angle = Convert.ToDouble(reader.ReadLine());
-                        line = reader.ReadLine();
-                        pentagon.rotating_speed = Convert.ToInt32(line.Split(' ')[1]);
-                        pentagon.move_speed = Convert.ToInt32(line.Split(' ')[0]);
-                        line = reader.ReadLine();
-                        pentagon.color = Color.FromArgb(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]), Convert.ToInt32(line.Split(' ')[2]));
-                        pentagon.scale = Convert.ToDouble(reader.ReadLine());
-                        line = reader.ReadLine();
-                        pentagon.setTranslate(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
-                        figures.Add(pentagon);
-                        cboxCountFigures.Items.Add(count_figures++);
-                        cboxCountFigures.SelectedItem = count_figures - 1;
-                        for (int i = 0; i < 5; i++)
-                            temp_points[i] = new Point(-1, -1);
-                        break;
-                    case RHOMBUS:
-                        shift();
-                        Rhombus rhombus = new Rhombus(temp_points);
-                        Point cntr = new Point(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
-                        rhombus.center = cntr;
-                        rhombus.angle = Convert.ToDouble(reader.ReadLine());
-                        line = reader.ReadLine();
-                        rhombus.rotating_speed = Convert.ToInt32(line.Split(' ')[1]);
-                        rhombus.move_speed = Convert.ToInt32(line.Split(' ')[0]);
-                        line = reader.ReadLine();
-                        rhombus.color = Color.FromArgb(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]), Convert.ToInt32(line.Split(' ')[2]));
-                        rhombus.scale = Convert.ToDouble(reader.ReadLine());
-                        line = reader.ReadLine();
-                        rhombus.setTranslate(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
-                        figures.Add(rhombus);
-                        cboxCountFigures.Items.Add(count_figures++);
-                        cboxCountFigures.SelectedItem = count_figures - 1;
-                        for (int i = 0; i < 5; i++)
-                            temp_points[i] = new Point(-1, -1);
-                        break;
-                    default:
-                        exeption_label.Text = "Ошибка не выбран тип создаваемой фигуры";
-                        break;
-                }
-            }
-
-            reader.Close();
-            Console.ReadLine();
-        }
+    
 
         private void field_Key_Down(object sender, KeyEventArgs e)
         {
@@ -725,6 +623,112 @@ namespace WindowsFormsApplication3
             Form2 f2 = new Form2();
             f2.figures = this.figures;
             f2.Show();
+        }
+
+        private void сохранитьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FileStream file = new FileStream("shapes.txt", FileMode.Create);
+            StreamWriter writer = new StreamWriter(file);
+
+            foreach (dynamic temp in figures)
+            {
+                writer.Write("#" + Environment.NewLine + temp.type + Environment.NewLine);
+                foreach (Point p in temp.static_points)
+                    writer.Write(p.X + " " + p.Y + " ");
+                writer.Write(Environment.NewLine + temp.center.X + " " + temp.center.Y + Environment.NewLine + temp.angle + Environment.NewLine
+                    + temp.move_speed + " " + temp.rotating_speed + Environment.NewLine + temp.color.R + " " + temp.color.G + " " + temp.color.B
+                    + Environment.NewLine + temp.scale + Environment.NewLine + temp.translate.X + " " + temp.translate.Y + Environment.NewLine);
+            }
+            writer.Close();
+        }
+
+        private void открытьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FileStream file = new FileStream("shapes.txt", FileMode.Open);
+            StreamReader reader = new StreamReader(file);
+            string line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                count_click = 4;
+                if (line != "#")
+                    return;
+                line = reader.ReadLine();
+                int type = Convert.ToInt32(line);
+                line = reader.ReadLine();
+                string[] s = line.Split(' ');
+                for (int C = 0; s[C] != ""; C++)
+                    if (C % 2 == 0)
+                        temp_points[C / 2].X = Convert.ToInt32(s[C]);
+                    else
+                        temp_points[(C - 1) / 2].Y = Convert.ToInt32(s[C]);
+                line = reader.ReadLine();
+                switch (type)
+                {
+                    case PARALLELOGRAM:
+                        Parallelogram p = new Parallelogram(temp_points, new Point(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1])));
+                        p.angle = Convert.ToDouble(reader.ReadLine());
+                        line = reader.ReadLine();
+                        p.rotating_speed = Convert.ToInt32(line.Split(' ')[1]);
+                        p.move_speed = Convert.ToInt32(line.Split(' ')[0]);
+                        line = reader.ReadLine();
+                        p.color = Color.FromArgb(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]), Convert.ToInt32(line.Split(' ')[2]));
+                        p.scale = Convert.ToDouble(reader.ReadLine()) - 1;
+                        line = reader.ReadLine();
+                        p.setTranslate(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
+                        figures.Add(p);
+                        cboxCountFigures.Items.Add(count_figures++);
+                        cboxCountFigures.SelectedItem = count_figures - 1;
+                        for (int i = 0; i < 5; i++)
+                            temp_points[i] = new Point(-1, -1);
+                        break;
+                    case PENTAGON:
+                        shift();
+                        Pentagon pentagon = new Pentagon(temp_points);
+                        Point center = new Point(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
+                        pentagon.center = center;
+                        pentagon.angle = Convert.ToDouble(reader.ReadLine());
+                        line = reader.ReadLine();
+                        pentagon.rotating_speed = Convert.ToInt32(line.Split(' ')[1]);
+                        pentagon.move_speed = Convert.ToInt32(line.Split(' ')[0]);
+                        line = reader.ReadLine();
+                        pentagon.color = Color.FromArgb(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]), Convert.ToInt32(line.Split(' ')[2]));
+                        pentagon.scale = Convert.ToDouble(reader.ReadLine()) - 1;
+                        line = reader.ReadLine();
+                        pentagon.setTranslate(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
+                        figures.Add(pentagon);
+                        cboxCountFigures.Items.Add(count_figures++);
+                        cboxCountFigures.SelectedItem = count_figures - 1;
+                        for (int i = 0; i < 5; i++)
+                            temp_points[i] = new Point(-1, -1);
+                        break;
+                    case RHOMBUS:
+                        shift();
+                        Rhombus rhombus = new Rhombus(temp_points);
+                        Point cntr = new Point(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
+                        rhombus.center = cntr;
+                        rhombus.angle = Convert.ToDouble(reader.ReadLine());
+                        line = reader.ReadLine();
+                        rhombus.rotating_speed = Convert.ToInt32(line.Split(' ')[1]);
+                        rhombus.move_speed = Convert.ToInt32(line.Split(' ')[0]);
+                        line = reader.ReadLine();
+                        rhombus.color = Color.FromArgb(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]), Convert.ToInt32(line.Split(' ')[2]));
+                        rhombus.scale = Convert.ToDouble(reader.ReadLine()) - 1;
+                        line = reader.ReadLine();
+                        rhombus.setTranslate(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
+                        figures.Add(rhombus);
+                        cboxCountFigures.Items.Add(count_figures++);
+                        cboxCountFigures.SelectedItem = count_figures - 1;
+                        for (int i = 0; i < 5; i++)
+                            temp_points[i] = new Point(-1, -1);
+                        break;
+                    default:
+                        exeption_label.Text = "Ошибка не выбран тип создаваемой фигуры";
+                        break;
+                }
+            }
+
+            reader.Close();
+            Console.ReadLine();
         }
 
         private void enable_Input_Shape(object sender, EventArgs e)

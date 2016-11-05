@@ -14,6 +14,7 @@ namespace WindowsFormsApplication3
         private short count_click = 0;
         private uint count_figures = 0;
         private ArrayList figures = new ArrayList();
+        private BinaryTree Figures = new BinaryTree();
         private Point[] temp_points = new Point[6];
         private bool flag_input = false;// триггер для произвольного ввода точек
         private Shape GLOBAL = new Shape();
@@ -160,6 +161,11 @@ namespace WindowsFormsApplication3
 
         }
 
+        public double norma(double x, double y)
+        {
+            return Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2));
+        }
+
         private void lock_Interface(bool i)
         {
             cboxSelectedType.Enabled = i;
@@ -272,7 +278,7 @@ namespace WindowsFormsApplication3
                     temp_points[3].X = temp_points[0].X + Convert.ToInt32((temp_points[2].X - temp_points[1].X) * t);
                     temp_points[3].Y = temp_points[0].Y + Convert.ToInt32((temp_points[2].Y - temp_points[1].Y) * t);
                     t = (double)(temp_points[1].Y - temp_points[2].Y) / (temp_points[2].Y - temp_points[0].Y - temp_points[1].Y + temp_points[3].Y);
-                    figures.Add(new Parallelogram(temp_points, new Point(temp_points[1].X + Convert.ToInt32((temp_points[1].X - temp_points[3].X) * t),
+                    Figures.Insert(new Parallelogram(temp_points, new Point(temp_points[1].X + Convert.ToInt32((temp_points[1].X - temp_points[3].X) * t),
                     temp_points[1].Y + Convert.ToInt32((temp_points[1].Y - temp_points[3].Y) * t))));
 
                     cboxCountFigures.Items.Add(count_figures++);
@@ -321,7 +327,7 @@ namespace WindowsFormsApplication3
                     u += Math.PI * 0.4;
                 }
 
-                figures.Add(new Pentagon(temp_points));
+                Figures.Insert(new Pentagon(temp_points));
                 cboxCountFigures.Items.Add(count_figures++);
                 cboxCountFigures.SelectedItem = count_figures - 1;
                 }
@@ -368,7 +374,7 @@ namespace WindowsFormsApplication3
                 temp_points[4].X = temp_points[0].X + Convert.ToInt32(pX * (-t));
                 temp_points[4].Y = temp_points[0].Y + Convert.ToInt32(pY * (-t));
 
-                figures.Add(new Rhombus(temp_points));
+                Figures.Insert(new Rhombus(temp_points));
                 cboxCountFigures.Items.Add(count_figures++);
                 cboxCountFigures.SelectedItem = count_figures - 1;
                 }
@@ -416,7 +422,7 @@ namespace WindowsFormsApplication3
         {
             if (count_figures > 0)
             {
-                dynamic temp = figures[pointer_shape];
+                dynamic temp = Figures.Find(figures[pointer_shape]).Data;
                 switch (e.KeyCode)
                 {
                     // W A S D отвечают за перемещение по x и y 
@@ -517,6 +523,7 @@ namespace WindowsFormsApplication3
                             break;
                         default:
                             exeption_label.Text = "Ошибка не выбран тип создаваемой фигуры";
+                            lock_Interface(true);
                             break;
                     }
             }
@@ -538,6 +545,7 @@ namespace WindowsFormsApplication3
 
         private void timer1_Tick(object sender, EventArgs e)
         {
+            figures = Figures.Across(Figures);
             Draw();
         }
 
@@ -550,7 +558,7 @@ namespace WindowsFormsApplication3
         {
             if (count_figures > 0)
             {
-                dynamic temp = figures[pointer_shape];
+                dynamic temp = Figures.Find(figures[pointer_shape]).Data;
                 temp.rotating_speed = barRotatingSpeed.Value;
                 field.Focus();
             }
@@ -560,7 +568,7 @@ namespace WindowsFormsApplication3
         {
             if (count_figures > 0)
             {
-                dynamic temp = figures[pointer_shape];
+                dynamic temp = Figures.Find(figures[pointer_shape]).Data;
                 temp.move_speed = barMoveSpeed.Value;
                 field.Focus();
             }
@@ -570,7 +578,7 @@ namespace WindowsFormsApplication3
         {
             if (count_figures > 0)
             {
-                dynamic temp = figures[pointer_shape];
+                dynamic temp = Figures.Find(figures[pointer_shape]).Data;
                 ColorDialog MyDialog = new ColorDialog();
                 MyDialog.AllowFullOpen = false;
                 MyDialog.ShowHelp = true;
@@ -593,16 +601,16 @@ namespace WindowsFormsApplication3
             switch (cboxSelectedType.Text.Length)
             {
                 case PARALLELOGRAM:
-                    figures.Add(new Parallelogram());
+                    Figures.Insert(new Parallelogram());
                     break;
                 case PENTAGON:
-                    figures.Add(new Pentagon());
+                    Figures.Insert(new Pentagon());
                     break;
                 case ELLIPSE:
-                    figures.Add(new Ellipse());
+                    Figures.Insert(new Ellipse());
                     break;
                 case RHOMBUS:
-                    figures.Add(new Rhombus());
+                    Figures.Insert(new Rhombus());
                     break;
                 default:
                     flag = false;
@@ -618,12 +626,7 @@ namespace WindowsFormsApplication3
             }
         }
 
-        private void сортировкаToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Form2 f2 = new Form2();
-            f2.figures = this.figures;
-            f2.Show();
-        }
+       
 
         private void сохранитьToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -675,7 +678,7 @@ namespace WindowsFormsApplication3
                         p.scale = Convert.ToDouble(reader.ReadLine()) - 1;
                         line = reader.ReadLine();
                         p.setTranslate(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
-                        figures.Add(p);
+                        Figures.Insert(p);
                         cboxCountFigures.Items.Add(count_figures++);
                         cboxCountFigures.SelectedItem = count_figures - 1;
                         for (int i = 0; i < 5; i++)
@@ -695,7 +698,7 @@ namespace WindowsFormsApplication3
                         pentagon.scale = Convert.ToDouble(reader.ReadLine()) - 1;
                         line = reader.ReadLine();
                         pentagon.setTranslate(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
-                        figures.Add(pentagon);
+                        Figures.Insert(pentagon);
                         cboxCountFigures.Items.Add(count_figures++);
                         cboxCountFigures.SelectedItem = count_figures - 1;
                         for (int i = 0; i < 5; i++)
@@ -715,7 +718,7 @@ namespace WindowsFormsApplication3
                         rhombus.scale = Convert.ToDouble(reader.ReadLine()) - 1;
                         line = reader.ReadLine();
                         rhombus.setTranslate(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
-                        figures.Add(rhombus);
+                        Figures.Insert(rhombus);
                         cboxCountFigures.Items.Add(count_figures++);
                         cboxCountFigures.SelectedItem = count_figures - 1;
                         for (int i = 0; i < 5; i++)
@@ -731,6 +734,8 @@ namespace WindowsFormsApplication3
             Console.ReadLine();
         }
 
+        
+
         private void enable_Input_Shape(object sender, EventArgs e)
         {
             exeption_label.Text = "";
@@ -742,7 +747,7 @@ namespace WindowsFormsApplication3
         private void cbox_Selected_Item_Change(object sender, EventArgs e)
         {
 
-          dynamic temp = figures[pointer_shape];
+          dynamic temp = Figures.Find(figures[pointer_shape]).Data;
           temp.active = false;
           pointer_shape = Convert.ToInt32(cboxCountFigures.Text);
           temp = figures[pointer_shape];
@@ -758,7 +763,7 @@ namespace WindowsFormsApplication3
         {
             if (count_figures > 0)
             {
-                figures.Remove((Shape)figures[pointer_shape]);
+                Figures.Remove(Figures.Find(figures[pointer_shape]).Data);
                 cboxCountFigures.Items.RemoveAt((int)count_figures - 1);
                 count_figures--;
                 pointer_shape = ((int)count_figures - 1 < 0) ? 0 : (int)count_figures - 1;
@@ -773,6 +778,7 @@ namespace WindowsFormsApplication3
     {
         private double _scale;
         private Point _translate;
+        public double R { get; set; }
         public Color color { set; get; }
         public Point center { set; get; }
         public double angle { set; get; }
@@ -782,6 +788,11 @@ namespace WindowsFormsApplication3
         public Point[] static_points { set; get; }
         public Point translate { get { return _translate; } }
         public double scale { set { _scale += value; } get { return _scale; } }
+
+        public static double norma(double x, double y)
+        {
+            return Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2));
+        }
 
         public void toRotate(double angle)
         {
@@ -799,6 +810,7 @@ namespace WindowsFormsApplication3
     {
         private Point _translate;
         public int type { get; }
+
         public Parallelogram()
         {
             static_points = new Point[4];
@@ -819,9 +831,11 @@ namespace WindowsFormsApplication3
             scale = 1;
             active = true;
             move_speed = 2;
+            
             rotating_speed = 1;
             _translate = new Point(0, 0);
             center = new Point(322, 253);
+            R = norma(static_points[1].X - center.X, static_points[1].Y - center.Y);
 
             Random rand = new Random();
             color = Color.FromArgb(rand.Next(256), rand.Next(256), rand.Next(256));
@@ -845,6 +859,7 @@ namespace WindowsFormsApplication3
             angle = 0;
             scale = 1;
             center = c;
+            R = norma(static_points[1].X - center.X, static_points[1].Y - center.Y);
             active = true;
             move_speed = 2;
             rotating_speed = 1;
@@ -859,7 +874,6 @@ namespace WindowsFormsApplication3
     {
         private Point _translate;
         public int type { get; }
-
         public Pentagon()
         {
             static_points = new Point[5];
@@ -886,6 +900,7 @@ namespace WindowsFormsApplication3
             rotating_speed = 1;
             _translate = new Point(0, 0);
             center = new Point(350, 275);
+            R = norma(static_points[1].X - center.X, static_points[1].Y - center.Y);
 
             Random rand = new Random();
             color = Color.FromArgb(rand.Next(256), rand.Next(256), rand.Next(256));
@@ -914,6 +929,7 @@ namespace WindowsFormsApplication3
             angle = 0;
             scale = 1;
             center = new Point(new_points[0].X, new_points[0].Y);
+            R = norma(static_points[1].X - center.X, static_points[1].Y - center.Y);
             active = true;
             move_speed = 2;
             rotating_speed = 1;
@@ -1005,6 +1021,7 @@ namespace WindowsFormsApplication3
             rotating_speed = 1;
             _translate = new Point(0, 0);
             center = new Point(300, 250);
+            R = norma(static_points[1].X - center.X, static_points[1].Y - center.Y);
 
             Random rand = new Random();
             color = Color.FromArgb(rand.Next(256), rand.Next(256), rand.Next(256));
@@ -1029,14 +1046,314 @@ namespace WindowsFormsApplication3
             angle = 0;
             scale = 1;
             center = new Point(new_points[0].X, new_points[0].Y);
+            R = (norma(static_points[1].X - center.X, static_points[1].Y - center.Y) < norma(static_points[0].X - center.X, static_points[0].Y - center.Y)) ? norma(static_points[0].X - center.X, static_points[0].Y - center.Y) : norma(static_points[1].X - center.X, static_points[1].Y - center.Y);
             active = true;
             move_speed = 2;
             rotating_speed = 1;
             _translate = new Point(0, 0);
+
 
             Random rand = new Random();
             color = Color.FromArgb(rand.Next(256), rand.Next(256), rand.Next(256));
         }
     }
 
+    public enum BinSide
+    {
+        Left,
+        Right
+    }
+    /// <summary>
+    /// Бинарное дерево поиска
+    /// </summary>
+    public class BinaryTree
+    {
+
+        public dynamic Data { get; private set; }
+        public BinaryTree Left { get; set; }
+        public BinaryTree Right { get; set; }
+        public BinaryTree Parent { get; set; }
+
+        /// <summary>
+        /// Вставляет целочисленное значение в дерево
+        /// </summary>
+        /// <param name="data">Значение, которое добавится в дерево</param>
+        public void Insert(dynamic data)
+        {
+            if (Data == null)
+            {
+                Data = data;
+                return;
+            }
+            if (Data.R <= data.R)
+            {
+                if (Right == null) Right = new BinaryTree();
+                Insert(data, Right, this);
+                return;
+            }
+            else
+            {
+                if (Left == null) Left = new BinaryTree();
+                Insert(data, Left, this);
+            }
+        }
+
+        /// <summary>
+        /// Вставляет значение в определённый узел дерева
+        /// </summary>
+        /// <param name="data">Значение</param>
+        /// <param name="node">Целевой узел для вставки</param>
+        /// <param name="parent">Родительский узел</param>
+        private void Insert(dynamic data, BinaryTree node, BinaryTree parent)
+        {
+            if (node.Data == null)
+            {
+                node.Data = data;
+                node.Parent = parent;
+                return;
+            }
+            if (node.Data.R <= data.R)
+            {
+                if (node.Right == null) node.Right = new BinaryTree();
+                Insert(data, node.Right, node);
+            }
+            else
+            {
+                if (node.Left == null) node.Left = new BinaryTree();
+                Insert(data, node.Left, node);
+            }
+        }
+        /// <summary>
+        /// Уставляет узел в определённый узел дерева
+        /// </summary>
+        /// <param name="data">Вставляемый узел</param>
+        /// <param name="node">Целевой узел</param>
+        /// <param name="parent">Родительский узел</param>
+        private void Insert(BinaryTree data, BinaryTree node, BinaryTree parent)
+        {
+            if (node.Data == null)
+            {
+                node.Data = data.Data;
+                node.Left = data.Left;
+                node.Right = data.Right;
+                node.Parent = parent;
+                return;
+            }
+            if (node.Data.R <= data.Data.R)
+            {
+                if (node.Right == null) node.Right = new BinaryTree();
+                Insert(data, node.Right, node);
+            }
+            else
+            {
+                if (node.Left == null) node.Left = new BinaryTree();
+                Insert(data, node.Left, node);
+            }
+        }
+        /// <summary>
+        /// Определяет, в какой ветви для родительского лежит данный узел
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        private BinSide? MeForParent(BinaryTree node)
+        {
+            if (node.Parent == null) return null;
+            if (node.Parent.Left == node) return BinSide.Left;
+            if (node.Parent.Right == node) return BinSide.Right;
+            return null;
+        }
+
+        /// <summary>
+        /// Удаляет узел из дерева
+        /// </summary>
+        /// <param name="node">Удаляемый узел</param>
+        public void Remove(BinaryTree node)
+        {
+            if (node == null) return;
+            var me = MeForParent(node);
+
+            if (me == null)
+            {
+                BinaryTree bufRightLeft = null;
+                BinaryTree bufRightRight = null;
+                node.Data = null;
+                if (node.Right != null)
+                {
+                    bufRightLeft = node.Right.Left;
+                    bufRightRight = node.Right.Right;
+                    node.Data = node.Right.Data;
+                }
+                var bufLeft = node.Left;
+                node.Right = bufRightRight;
+                node.Left = bufRightLeft;
+                if (bufLeft != null)
+                    Insert(bufLeft, node, node);
+                return;
+            }
+
+
+            //Если у узла нет дочерних элементов, его можно смело удалять
+            if (node.Left == null && node.Right == null)
+            {
+                if (me == BinSide.Left)
+                {
+                    node.Parent.Left = null;
+                }
+                else
+                {
+                    node.Parent.Right = null;
+                }
+                return;
+            }
+            //Если нет левого дочернего, то правый дочерний становится на место удаляемого
+            if (node.Left == null)
+            {
+                if (me == BinSide.Left)
+                {
+                    node.Parent.Left = node.Right;
+                }
+                else
+                {
+                    node.Parent.Right = node.Right;
+                }
+
+                node.Right.Parent = node.Parent;
+                return;
+            }
+            //Если нет правого дочернего, то левый дочерний становится на место удаляемого
+            if (node.Right == null)
+            {
+                if (me == BinSide.Left)
+                {
+                    node.Parent.Left = node.Left;
+                }
+                else
+                {
+                    node.Parent.Right = node.Left;
+                }
+
+                node.Left.Parent = node.Parent;
+                return;
+            }
+
+            //Если присутствуют оба дочерних узла
+            //то правый ставим на место удаляемого
+            //а левый вставляем в правый
+
+            if (me == BinSide.Left)
+            {
+                node.Parent.Left = node.Right;
+            }
+            if (me == BinSide.Right)
+            {
+                node.Parent.Right = node.Right;
+            }
+            if (me == null)
+            {
+                var bufLeft = node.Left;
+                var bufRightLeft = node.Right.Left;
+                var bufRightRight = node.Right.Right;
+                node.Data = node.Right.Data;
+                node.Right = bufRightRight;
+                node.Left = bufRightLeft;
+                Insert(bufLeft, node, node);
+            }
+            else
+            {
+                node.Right.Parent = node.Parent;
+                Insert(node.Left, node.Right, node.Right);
+            }
+        }
+        /// <summary>
+        /// Удаляет значение из дерева
+        /// </summary>
+        /// <param name="data">Удаляемое значение</param>
+        public void Remove(dynamic data)
+        {
+            var removeNode = Find(data);
+            if (removeNode != null)
+            {
+                Remove(removeNode);
+            }
+        }
+        /// <summary>
+        /// Ищет узел с заданным значением
+        /// </summary>
+        /// <param name="data">Значение для поиска</param>
+        /// <returns></returns>
+        public BinaryTree Find(dynamic data)
+        {
+            if (Data.R == data.R) return this;
+            if (Data.R > data.R)
+            {
+                return Find(data, Left);
+            }
+            return Find(data, Right);
+        }
+        /// <summary>
+        /// Ищет значение в определённом узле
+        /// </summary>
+        /// <param name="data">Значение для поиска</param>
+        /// <param name="node">Узел для поиска</param>
+        /// <returns></returns>
+        public BinaryTree Find(dynamic data, BinaryTree node)
+        {
+            if (node == null) return null;
+
+            if (node.Data == data) return node;
+            if (node.Data.R > data.R)
+            {
+                return Find(data, node.Left);
+            }
+            return Find(data, node.Right);
+        }
+
+        /// <summary>
+        /// Количество элементов в дереве
+        /// </summary>
+        /// <returns></returns>
+        public long CountElements()
+        {
+            return CountElements(this);
+        }
+        /// <summary>
+        /// Количество элементов в определённом узле
+        /// </summary>
+        /// <param name="node">Узел для подсчета</param>
+        /// <returns></returns>
+        private long CountElements(BinaryTree node)
+        {
+            long count = 1;
+            if (node.Right != null)
+            {
+                count += CountElements(node.Right);
+            }
+            if (node.Left != null)
+            {
+                count += CountElements(node.Left);
+            }
+            return count;
+        }
+
+        public ArrayList Across(BinaryTree node)
+        {
+            ArrayList BinaryTree = new ArrayList();
+            /*
+             Аргументы метода:
+             1. TreeNode node - текущий "элемент дерева" (ref  передача по ссылке)       
+             2. ref string s - строка, в которой накапливается результат (ref - передача по ссылке)
+            */
+            dynamic queue = new Queue(); // создать новую очередь
+            queue.Enqueue(node); // поместить в очередь первый уровень
+            while (queue.Count != 0) // пока очередь не пуста
+            {
+                if (queue.Peek().Left != null)
+                    queue.Enqueue(queue.Peek().Left);
+                if (queue.Peek().Right != null)
+                    queue.Enqueue(queue.Peek().Right);
+                BinaryTree.Add(queue.Dequeue().Data);
+            }  
+            return BinaryTree;
+        }
+    }
 }

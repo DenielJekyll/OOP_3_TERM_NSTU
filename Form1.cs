@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using Tao.OpenGl;
 using Tao.FreeGlut;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 namespace WindowsFormsApplication3
@@ -13,17 +14,16 @@ namespace WindowsFormsApplication3
     {
         private short count_click = 0;
         private uint count_figures = 0;
-        private ArrayList figures = new ArrayList();
+        private Dictionary<uint, double> figuresList = new Dictionary<uint, double>();
         private BinaryTree Figures = new BinaryTree();
         private Point[] temp_points = new Point[6];
         private bool flag_input = false;// триггер для произвольного ввода точек
         private Shape GLOBAL = new Shape();
-        private int pointer_shape = 0;
-        public const int PARALLELOGRAM = 14, PENTAGON = 8, ELLIPSE = 6, RHOMBUS = 4;
+        private uint pointer_shape = 1;
+        public const int PARALLELOGRAM = 14, PENTAGON = 8, RHOMBUS = 4;
 
         /* 
         параллелограмм = 14
-        элипс = 5
         пентагон = 8
         ромб = 4
          Список известных ошибок:
@@ -68,6 +68,10 @@ namespace WindowsFormsApplication3
 
         private void Draw()
         {
+            dynamic queue = new Queue(); // создать новую очередь
+            queue.Enqueue(Figures); // поместить в очередь первый уровень
+           
+            
             // очистка буфера цвета и буфера глубины 
             Gl.glClear(Gl.GL_COLOR_BUFFER_BIT | Gl.GL_DEPTH_BUFFER_BIT);
             Gl.glClearColor(255, 255, 255, 1);
@@ -85,8 +89,14 @@ namespace WindowsFormsApplication3
             if (count_figures > 0)
             {
                 int type;
-                foreach (dynamic temp in figures)
+                dynamic temp;
+                while (queue.Count != 0) // пока очередь не пуста
                 {
+                    if (queue.Peek().Left != null)
+                        queue.Enqueue(queue.Peek().Left);
+                    if (queue.Peek().Right != null)
+                        queue.Enqueue(queue.Peek().Right);
+                    temp = queue.Dequeue().Data;
 
                     Gl.glPushMatrix();
                     Gl.glTranslated(temp.translate.X, temp.translate.Y, 0.0f);
@@ -100,9 +110,6 @@ namespace WindowsFormsApplication3
                     {
                         case PENTAGON:
                             draw_Pentagon(temp);
-                            break;
-                        case ELLIPSE:
-                            draw_Ellipse(temp);
                             break;
                         default:
                             draw_Quadrangle(temp);
@@ -170,7 +177,6 @@ namespace WindowsFormsApplication3
         {
             cboxSelectedType.Enabled = i;
             cboxCountFigures.Enabled = i;
-            btnCreatePrimitive.Enabled = i;
             btnCreateArbitrarily.Enabled = i;
         }
 
@@ -199,37 +205,7 @@ namespace WindowsFormsApplication3
                 Gl.glEnd();
             }
         }
-        private void draw_Ellipse(dynamic ellipse)
-        {
-            double x, y;
-            int t;
-            Gl.glBegin(Gl.GL_POLYGON);
-            for (t = 0; t <= 360; t += 1)
-            {
-                x = 150 * Math.Sin(t) + ellipse.center.X;
-                y = 50 * Math.Cos(t) + ellipse.center.Y;
-                Gl.glVertex2d(x, y);
-            }
-            Gl.glEnd();
-            if (ellipse.active)
-            {
-                Gl.glPointSize(3);
-                Gl.glColor3ub((byte)(255 - ellipse.color.R), (byte)(255 - ellipse.color.G), (byte)(255 - ellipse.color.B));
-                Gl.glBegin(Gl.GL_POINTS);
-                for (t = 0; t <= 360; t += 1)
-                {
-                    x = 150 * Math.Sin(t) + ellipse.center.X;
-                    y = 50 * Math.Cos(t) + ellipse.center.Y;
-                    Gl.glVertex2d(x, y);
-                }
-                Gl.glEnd();
-                Gl.glPointSize(5);
-                Gl.glBegin(Gl.GL_POINTS);
-                Gl.glColor3d(0, 0, 0);
-                Gl.glVertex2d(ellipse.center.X, ellipse.center.Y);
-                Gl.glEnd();
-            }
-        }
+       
         private void draw_Pentagon(dynamic pentagon)
         {
             Point[] points = pentagon.static_points;
@@ -257,6 +233,19 @@ namespace WindowsFormsApplication3
             }
         }
 
+        private uint index()
+        {
+            if (count_figures > 0)
+            {
+                int i;
+                // починить поиск индекса
+                for (i = 0; i <= cboxCountFigures.Items.Count; i++)
+                    if (!cboxCountFigures.Items[i].Equals(i+1)) return (uint)i+1;
+                return (uint)i + 2;
+            }
+            return 1;
+        }
+
         private void create_Parallelogram(MouseEventArgs e)
         {
             if (count_click < 2)
@@ -272,72 +261,84 @@ namespace WindowsFormsApplication3
                 count_click = 0;
                 flag_input = false;
                 lock_Interface(true);
-                try
-                {
+                //try
+                //{
                     double t = (double)(temp_points[0].Y - temp_points[2].Y) / (temp_points[0].Y - temp_points[1].Y - temp_points[2].Y + temp_points[1].Y);
                     temp_points[3].X = temp_points[0].X + Convert.ToInt32((temp_points[2].X - temp_points[1].X) * t);
                     temp_points[3].Y = temp_points[0].Y + Convert.ToInt32((temp_points[2].Y - temp_points[1].Y) * t);
+
                     t = (double)(temp_points[1].Y - temp_points[2].Y) / (temp_points[2].Y - temp_points[0].Y - temp_points[1].Y + temp_points[3].Y);
-                    Figures.Insert(new Parallelogram(temp_points, new Point(temp_points[1].X + Convert.ToInt32((temp_points[1].X - temp_points[3].X) * t),
-                    temp_points[1].Y + Convert.ToInt32((temp_points[1].Y - temp_points[3].Y) * t))));
 
-                    cboxCountFigures.Items.Add(count_figures++);
-                    cboxCountFigures.SelectedItem = count_figures - 1;
+                    Point center = new Point(temp_points[1].X + Convert.ToInt32((temp_points[1].X - temp_points[3].X) * t),
+                    temp_points[1].Y + Convert.ToInt32((temp_points[1].Y - temp_points[3].Y) * t));
+
+                    double R = norma(temp_points[1].X - center.X, temp_points[1].Y - center.Y);
+
+                    Figures.Insert(new Parallelogram(temp_points, center, R));
+
+                    
+
+                    figuresList.Add(index(), R);
+
+                    cboxCountFigures.Items.Add(index());
+                    
+                    cboxCountFigures.SelectedItem = index();
+
+                    count_figures++;
                     for (int i = 0; i < 5; i++)
                         temp_points[i] = new Point(-1, -1);
-                }
-                catch (Exception)
-                {
-                    exeption_label.Text = "Некоректно заданы точки, фигура не построена";
-                    for (int i = 0; i < 5; i++)
-                        temp_points[i] = new Point(-1, -1);
-                }
 
-            }
+                //}
+                //      catch (Exception)
+                //{
+                //    exeption_label.Text = "Некоректно заданы точки, фигура не построена";
+                //    for (int i = 0; i < 5; i++)
+                //        temp_points[i] = new Point(-1, -1);
+                //}
+
         }
-
-        private void create_Ellipse(MouseEventArgs e) { }
+        }
 
         private void create_Pentagon(MouseEventArgs e)
         {
-            if (count_click < 2)
-            {
-                temp_points[count_click].X = e.X;
-                temp_points[count_click].Y = field.Height - e.Y;
-                count_click++;
-            }
-            else
-            {
-                temp_points[count_click].X = e.X;
-                temp_points[count_click].Y = field.Height - e.Y;
-                count_click = 0;
-                flag_input = false;
-                lock_Interface(true);
-                try { 
-                double u, t;
-                double pX, pY;
-                t = Math.Sqrt(Math.Pow(e.X - temp_points[0].X, 2) + Math.Pow(field.Height - e.Y - temp_points[0].Y, 2));
-                u = Math.Acos((temp_points[1].X - temp_points[0].X) / Math.Sqrt(Math.Pow((temp_points[1].X - temp_points[0].X), 2) + Math.Pow((temp_points[1].Y - temp_points[0].Y), 2)));
-                for (int i = 1; i < 6; i++)
-                {
-                    pX = Math.Cos(u);
-                    pY = Math.Sin(u);
-                    temp_points[i].X = temp_points[0].X + Convert.ToInt32(pX * t);
-                    temp_points[i].Y = temp_points[0].Y + Convert.ToInt32(pY * t);
-                    u += Math.PI * 0.4;
-                }
+        //    if (count_click < 2)
+        //    {
+        //        temp_points[count_click].X = e.X;
+        //        temp_points[count_click].Y = field.Height - e.Y;
+        //        count_click++;
+        //    }
+        //    else
+        //    {
+        //        temp_points[count_click].X = e.X;
+        //        temp_points[count_click].Y = field.Height - e.Y;
+        //        count_click = 0;
+        //        flag_input = false;
+        //        lock_Interface(true);
+        //        try { 
+        //        double u, t;
+        //        double pX, pY;
+        //        t = Math.Sqrt(Math.Pow(e.X - temp_points[0].X, 2) + Math.Pow(field.Height - e.Y - temp_points[0].Y, 2));
+        //        u = Math.Acos((temp_points[1].X - temp_points[0].X) / Math.Sqrt(Math.Pow((temp_points[1].X - temp_points[0].X), 2) + Math.Pow((temp_points[1].Y - temp_points[0].Y), 2)));
+        //        for (int i = 1; i < 6; i++)
+        //        {
+        //            pX = Math.Cos(u);
+        //            pY = Math.Sin(u);
+        //            temp_points[i].X = temp_points[0].X + Convert.ToInt32(pX * t);
+        //            temp_points[i].Y = temp_points[0].Y + Convert.ToInt32(pY * t);
+        //            u += Math.PI * 0.4;
+        //        }
 
-                Figures.Insert(new Pentagon(temp_points));
-                cboxCountFigures.Items.Add(count_figures++);
-                cboxCountFigures.SelectedItem = count_figures - 1;
-                }
-                catch (Exception)
-                {
-                    exeption_label.Text = "Некоректно заданы точки, фигура не построена";
-                }
-                for (int i = 0; i < 6; i++)
-                    temp_points[i] = new Point(-1, -1);
-            }
+        //        Figures.Insert(new Pentagon(temp_points));
+        //        cboxCountFigures.Items.Add(count_figures++);
+        //        cboxCountFigures.SelectedItem = count_figures - 1;
+        //        }
+        //        catch (Exception)
+        //        {
+        //            exeption_label.Text = "Некоректно заданы точки, фигура не построена";
+        //        }
+        //        for (int i = 0; i < 6; i++)
+        //            temp_points[i] = new Point(-1, -1);
+        //    }
 
         }
 
@@ -351,8 +352,10 @@ namespace WindowsFormsApplication3
             }
             else
             {
-                temp_points[count_click].X = e.X;
-                temp_points[count_click].Y = field.Height - e.Y;
+                Point center = new Point(temp_points[0].X, temp_points[0].Y);
+                temp_points[0] = temp_points[1];
+                temp_points[1].X = e.X;
+                temp_points[1].Y = field.Height - e.Y;
                 count_click = 0;
                 flag_input = false;
                 lock_Interface(true);
@@ -361,22 +364,31 @@ namespace WindowsFormsApplication3
                 double pX, pY;
                 try
                 {
-                u = Math.Acos((temp_points[1].X - temp_points[0].X) / Math.Sqrt(Math.Pow((temp_points[1].X - temp_points[0].X), 2) + Math.Pow((temp_points[1].Y - temp_points[0].Y), 2))) + Math.PI / 2;
+                    u = Math.Acos((temp_points[0].X - center.X) / Math.Sqrt(Math.Pow((temp_points[0].X - center.X), 2) + Math.Pow((temp_points[0].Y - center.Y), 2))) + Math.PI / 2;
                 pX = Math.Cos(u);
                 pY = Math.Sin(u);
-                t = Math.Sqrt(Math.Pow(e.X - temp_points[0].X, 2) + Math.Pow(field.Height - e.Y - temp_points[0].Y, 2));
-                temp_points[2].X = temp_points[0].X + temp_points[0].X - temp_points[1].X;
-                temp_points[2].Y = temp_points[0].Y + temp_points[0].Y - temp_points[1].Y;
+                t = Math.Sqrt(Math.Pow(e.X - center.X, 2) + Math.Pow(field.Height - e.Y - center.Y, 2));
+                temp_points[2].X = center.X + center.X - temp_points[0].X;
+                temp_points[2].Y = center.Y + center.Y - temp_points[0].Y;
 
-                temp_points[3].X = temp_points[0].X + Convert.ToInt32(pX * t);
-                temp_points[3].Y = temp_points[0].Y + Convert.ToInt32(pY * t);
+                temp_points[3].X = center.X + Convert.ToInt32(pX * t);
+                temp_points[3].Y = center.Y + Convert.ToInt32(pY * t);
 
-                temp_points[4].X = temp_points[0].X + Convert.ToInt32(pX * (-t));
-                temp_points[4].Y = temp_points[0].Y + Convert.ToInt32(pY * (-t));
+                temp_points[1].X = center.X + Convert.ToInt32(pX * (-t));
+                temp_points[1].Y = center.Y + Convert.ToInt32(pY * (-t));
 
-                Figures.Insert(new Rhombus(temp_points));
-                cboxCountFigures.Items.Add(count_figures++);
-                cboxCountFigures.SelectedItem = count_figures - 1;
+                double R = (norma(temp_points[1].X - center.X, temp_points[1].Y - center.Y) < norma(temp_points[0].X - center.X, temp_points[0].Y - center.Y)) ? norma(temp_points[0].X - center.X, temp_points[0].Y - center.Y) : norma(temp_points[1].X - center.X, temp_points[1].Y - center.Y);
+
+                Figures.Insert(new Rhombus(temp_points, center, R));
+
+                count_figures++;
+
+                figuresList.Add(count_figures, R);
+
+                cboxCountFigures.Items.Add(count_figures);
+
+                cboxCountFigures.SelectedItem = count_figures;
+
                 }
                 catch (Exception)
                 {
@@ -422,7 +434,7 @@ namespace WindowsFormsApplication3
         {
             if (count_figures > 0)
             {
-                dynamic temp = Figures.Find(figures[pointer_shape]).Data;
+                dynamic temp = Figures.Find(figuresList[pointer_shape]).Data;
                 switch (e.KeyCode)
                 {
                     // W A S D отвечают за перемещение по x и y 
@@ -533,7 +545,7 @@ namespace WindowsFormsApplication3
         {
             if (count_figures > 0)
             {
-                dynamic temp = figures[pointer_shape];
+                dynamic temp = Figures.Find(figuresList[pointer_shape]).Data;
                 if (e.Delta > 0)
                     if (count_figures > 0)
                         temp.scale = -0.05;
@@ -545,7 +557,7 @@ namespace WindowsFormsApplication3
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            figures = Figures.Across(Figures);
+           
             Draw();
         }
 
@@ -558,7 +570,7 @@ namespace WindowsFormsApplication3
         {
             if (count_figures > 0)
             {
-                dynamic temp = Figures.Find(figures[pointer_shape]).Data;
+                dynamic temp = Figures.Find(figuresList[pointer_shape]).Data;
                 temp.rotating_speed = barRotatingSpeed.Value;
                 field.Focus();
             }
@@ -568,7 +580,7 @@ namespace WindowsFormsApplication3
         {
             if (count_figures > 0)
             {
-                dynamic temp = Figures.Find(figures[pointer_shape]).Data;
+                dynamic temp = Figures.Find(figuresList[pointer_shape]).Data;
                 temp.move_speed = barMoveSpeed.Value;
                 field.Focus();
             }
@@ -578,7 +590,7 @@ namespace WindowsFormsApplication3
         {
             if (count_figures > 0)
             {
-                dynamic temp = Figures.Find(figures[pointer_shape]).Data;
+                dynamic temp = Figures.Find(figuresList[pointer_shape]).Data;
                 ColorDialog MyDialog = new ColorDialog();
                 MyDialog.AllowFullOpen = false;
                 MyDialog.ShowHelp = true;
@@ -595,53 +607,21 @@ namespace WindowsFormsApplication3
 
 
         //************* элементы правой панели **************
-        private void btn_Create_Primitive(object sender, EventArgs e)
-        {
-            bool flag = true;
-            switch (cboxSelectedType.Text.Length)
-            {
-                case PARALLELOGRAM:
-                    Figures.Insert(new Parallelogram());
-                    break;
-                case PENTAGON:
-                    Figures.Insert(new Pentagon());
-                    break;
-                case ELLIPSE:
-                    Figures.Insert(new Ellipse());
-                    break;
-                case RHOMBUS:
-                    Figures.Insert(new Rhombus());
-                    break;
-                default:
-                    flag = false;
-                    exeption_label.Text = "Ошибка не выбран тип создаваемой фигуры";
-                    break;
-            }
-            field.Focus();
-            if (flag)
-            { 
-                cboxCountFigures.Items.Add(count_figures++);
-                cboxCountFigures.SelectedItem = count_figures - 1;
-                exeption_label.Text = "";
-            }
-        }
-
-       
 
         private void сохранитьToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FileStream file = new FileStream("shapes.txt", FileMode.Create);
             StreamWriter writer = new StreamWriter(file);
 
-            foreach (dynamic temp in figures)
-            {
-                writer.Write("#" + Environment.NewLine + temp.type + Environment.NewLine);
-                foreach (Point p in temp.static_points)
-                    writer.Write(p.X + " " + p.Y + " ");
-                writer.Write(Environment.NewLine + temp.center.X + " " + temp.center.Y + Environment.NewLine + temp.angle + Environment.NewLine
-                    + temp.move_speed + " " + temp.rotating_speed + Environment.NewLine + temp.color.R + " " + temp.color.G + " " + temp.color.B
-                    + Environment.NewLine + temp.scale + Environment.NewLine + temp.translate.X + " " + temp.translate.Y + Environment.NewLine);
-            }
+            //foreach (dynamic temp in figures)
+            //{
+            //    writer.Write("#" + Environment.NewLine + temp.type + Environment.NewLine);
+            //    foreach (Point p in temp.static_points)
+            //        writer.Write(p.X + " " + p.Y + " ");
+            //    writer.Write(Environment.NewLine + temp.center.X + " " + temp.center.Y + Environment.NewLine + temp.angle + Environment.NewLine
+            //        + temp.move_speed + " " + temp.rotating_speed + Environment.NewLine + temp.color.R + " " + temp.color.G + " " + temp.color.B
+            //        + Environment.NewLine + temp.scale + Environment.NewLine + temp.translate.X + " " + temp.translate.Y + Environment.NewLine);
+            //}
             writer.Close();
         }
 
@@ -665,69 +645,69 @@ namespace WindowsFormsApplication3
                     else
                         temp_points[(C - 1) / 2].Y = Convert.ToInt32(s[C]);
                 line = reader.ReadLine();
-                switch (type)
-                {
-                    case PARALLELOGRAM:
-                        Parallelogram p = new Parallelogram(temp_points, new Point(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1])));
-                        p.angle = Convert.ToDouble(reader.ReadLine());
-                        line = reader.ReadLine();
-                        p.rotating_speed = Convert.ToInt32(line.Split(' ')[1]);
-                        p.move_speed = Convert.ToInt32(line.Split(' ')[0]);
-                        line = reader.ReadLine();
-                        p.color = Color.FromArgb(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]), Convert.ToInt32(line.Split(' ')[2]));
-                        p.scale = Convert.ToDouble(reader.ReadLine()) - 1;
-                        line = reader.ReadLine();
-                        p.setTranslate(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
-                        Figures.Insert(p);
-                        cboxCountFigures.Items.Add(count_figures++);
-                        cboxCountFigures.SelectedItem = count_figures - 1;
-                        for (int i = 0; i < 5; i++)
-                            temp_points[i] = new Point(-1, -1);
-                        break;
-                    case PENTAGON:
-                        shift();
-                        Pentagon pentagon = new Pentagon(temp_points);
-                        Point center = new Point(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
-                        pentagon.center = center;
-                        pentagon.angle = Convert.ToDouble(reader.ReadLine());
-                        line = reader.ReadLine();
-                        pentagon.rotating_speed = Convert.ToInt32(line.Split(' ')[1]);
-                        pentagon.move_speed = Convert.ToInt32(line.Split(' ')[0]);
-                        line = reader.ReadLine();
-                        pentagon.color = Color.FromArgb(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]), Convert.ToInt32(line.Split(' ')[2]));
-                        pentagon.scale = Convert.ToDouble(reader.ReadLine()) - 1;
-                        line = reader.ReadLine();
-                        pentagon.setTranslate(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
-                        Figures.Insert(pentagon);
-                        cboxCountFigures.Items.Add(count_figures++);
-                        cboxCountFigures.SelectedItem = count_figures - 1;
-                        for (int i = 0; i < 5; i++)
-                            temp_points[i] = new Point(-1, -1);
-                        break;
-                    case RHOMBUS:
-                        shift();
-                        Rhombus rhombus = new Rhombus(temp_points);
-                        Point cntr = new Point(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
-                        rhombus.center = cntr;
-                        rhombus.angle = Convert.ToDouble(reader.ReadLine());
-                        line = reader.ReadLine();
-                        rhombus.rotating_speed = Convert.ToInt32(line.Split(' ')[1]);
-                        rhombus.move_speed = Convert.ToInt32(line.Split(' ')[0]);
-                        line = reader.ReadLine();
-                        rhombus.color = Color.FromArgb(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]), Convert.ToInt32(line.Split(' ')[2]));
-                        rhombus.scale = Convert.ToDouble(reader.ReadLine()) - 1;
-                        line = reader.ReadLine();
-                        rhombus.setTranslate(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
-                        Figures.Insert(rhombus);
-                        cboxCountFigures.Items.Add(count_figures++);
-                        cboxCountFigures.SelectedItem = count_figures - 1;
-                        for (int i = 0; i < 5; i++)
-                            temp_points[i] = new Point(-1, -1);
-                        break;
-                    default:
-                        exeption_label.Text = "Ошибка не выбран тип создаваемой фигуры";
-                        break;
-                }
+                //switch (type)
+                //{
+                //    case PARALLELOGRAM:
+                //        Parallelogram p = new Parallelogram(temp_points, new Point(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1])));
+                //        p.angle = Convert.ToDouble(reader.ReadLine());
+                //        line = reader.ReadLine();
+                //        p.rotating_speed = Convert.ToInt32(line.Split(' ')[1]);
+                //        p.move_speed = Convert.ToInt32(line.Split(' ')[0]);
+                //        line = reader.ReadLine();
+                //        p.color = Color.FromArgb(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]), Convert.ToInt32(line.Split(' ')[2]));
+                //        p.scale = Convert.ToDouble(reader.ReadLine()) - 1;
+                //        line = reader.ReadLine();
+                //        p.setTranslate(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
+                //        Figures.Insert(p);
+                //        cboxCountFigures.Items.Add(count_figures++);
+                //        //cboxCountFigures.SelectedItem = count_figures - 1;
+                //        for (int i = 0; i < 5; i++)
+                //            temp_points[i] = new Point(-1, -1);
+                //        break;
+                //    case PENTAGON:
+                //        shift();
+                //        Pentagon pentagon = new Pentagon(temp_points);
+                //        Point center = new Point(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
+                //        pentagon.center = center;
+                //        pentagon.angle = Convert.ToDouble(reader.ReadLine());
+                //        line = reader.ReadLine();
+                //        pentagon.rotating_speed = Convert.ToInt32(line.Split(' ')[1]);
+                //        pentagon.move_speed = Convert.ToInt32(line.Split(' ')[0]);
+                //        line = reader.ReadLine();
+                //        pentagon.color = Color.FromArgb(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]), Convert.ToInt32(line.Split(' ')[2]));
+                //        pentagon.scale = Convert.ToDouble(reader.ReadLine()) - 1;
+                //        line = reader.ReadLine();
+                //        pentagon.setTranslate(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
+                //        Figures.Insert(pentagon);
+                //        cboxCountFigures.Items.Add(count_figures++);
+                //        //cboxCountFigures.SelectedItem = count_figures - 1;
+                //        for (int i = 0; i < 5; i++)
+                //            temp_points[i] = new Point(-1, -1);
+                //        break;
+                //    case RHOMBUS:
+                //        shift();
+                //        Rhombus rhombus = new Rhombus(temp_points);
+                //        Point cntr = new Point(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
+                //        rhombus.center = cntr;
+                //        rhombus.angle = Convert.ToDouble(reader.ReadLine());
+                //        line = reader.ReadLine();
+                //        rhombus.rotating_speed = Convert.ToInt32(line.Split(' ')[1]);
+                //        rhombus.move_speed = Convert.ToInt32(line.Split(' ')[0]);
+                //        line = reader.ReadLine();
+                //        rhombus.color = Color.FromArgb(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]), Convert.ToInt32(line.Split(' ')[2]));
+                //        rhombus.scale = Convert.ToDouble(reader.ReadLine()) - 1;
+                //        line = reader.ReadLine();
+                //        rhombus.setTranslate(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
+                //        Figures.Insert(rhombus);
+                //        cboxCountFigures.Items.Add(count_figures++);
+                //        //cboxCountFigures.SelectedItem = count_figures - 1;
+                //        for (int i = 0; i < 5; i++)
+                //            temp_points[i] = new Point(-1, -1);
+                //        break;
+                //    default:
+                //        exeption_label.Text = "Ошибка не выбран тип создаваемой фигуры";
+                //        break;
+                //}
             }
 
             reader.Close();
@@ -747,11 +727,11 @@ namespace WindowsFormsApplication3
         private void cbox_Selected_Item_Change(object sender, EventArgs e)
         {
 
-          dynamic temp = Figures.Find(figures[pointer_shape]).Data;
+          dynamic temp = Figures.Find(figuresList[pointer_shape]).Data;
           temp.active = false;
-          pointer_shape = Convert.ToInt32(cboxCountFigures.Text);
-          temp = figures[pointer_shape];
-          temp.active = true;
+          pointer_shape = Convert.ToUInt32(cboxCountFigures.Text);
+          temp = Figures.Find(figuresList[pointer_shape]).Data;
+            temp.active = true;
           barMoveSpeed.Value = temp.move_speed;
           barRotatingSpeed.Value = temp.rotating_speed;
           btnSetColor.BackColor = temp.color;
@@ -763,10 +743,13 @@ namespace WindowsFormsApplication3
         {
             if (count_figures > 0)
             {
-                Figures.Remove(Figures.Find(figures[pointer_shape]).Data);
-                cboxCountFigures.Items.RemoveAt((int)count_figures - 1);
+                Figures.Remove(Figures.Find(figuresList[pointer_shape]));
+                figuresList.Remove(pointer_shape);
+                
+                cboxCountFigures.Items.RemoveAt(cboxCountFigures.SelectedIndex);
                 count_figures--;
-                pointer_shape = ((int)count_figures - 1 < 0) ? 0 : (int)count_figures - 1;
+                pointer_shape = (count_figures > 0) ? (uint)cboxCountFigures.Items[(int)count_figures - 1] : 1;
+                cboxCountFigures.SelectedItem = pointer_shape;
             }
             field.Focus();
         }
@@ -829,7 +812,7 @@ namespace WindowsFormsApplication3
             type = 14;
             angle = 0;
             scale = 1;
-            active = true;
+            active = false;
             move_speed = 2;
             
             rotating_speed = 1;
@@ -841,7 +824,7 @@ namespace WindowsFormsApplication3
             color = Color.FromArgb(rand.Next(256), rand.Next(256), rand.Next(256));
         }
 
-        public Parallelogram(Point[] new_points, Point c)
+        public Parallelogram(Point[] new_points, Point c, double R)
         {
             static_points = new Point[4];
             static_points[0].X = new_points[0].X;
@@ -859,8 +842,8 @@ namespace WindowsFormsApplication3
             angle = 0;
             scale = 1;
             center = c;
-            R = norma(static_points[1].X - center.X, static_points[1].Y - center.Y);
-            active = true;
+            this.R = R;
+            active = false;
             move_speed = 2;
             rotating_speed = 1;
             _translate = new Point(0, 0);
@@ -895,7 +878,7 @@ namespace WindowsFormsApplication3
             type = 8;
             angle = 0;
             scale = 1;
-            active = true;
+            active = false;
             move_speed = 2;
             rotating_speed = 1;
             _translate = new Point(0, 0);
@@ -930,7 +913,7 @@ namespace WindowsFormsApplication3
             scale = 1;
             center = new Point(new_points[0].X, new_points[0].Y);
             R = norma(static_points[1].X - center.X, static_points[1].Y - center.Y);
-            active = true;
+            active = false;
             move_speed = 2;
             rotating_speed = 1;
             _translate = new Point(0, 0);
@@ -951,7 +934,7 @@ namespace WindowsFormsApplication3
             type = 6;
             angle = 0;
             scale = 1;
-            active = true;
+            active = false;
             move_speed = 2;
             rotating_speed = 1;
             _translate = new Point(0, 0);
@@ -983,7 +966,7 @@ namespace WindowsFormsApplication3
             angle = 0;
             scale = 1;
             center = c;
-            active = true;
+            active = false;
             move_speed = 2;
             rotating_speed = 1;
             _translate = new Point(0, 0);
@@ -1016,7 +999,7 @@ namespace WindowsFormsApplication3
             type = 4;
             angle = 0;
             scale = 1;
-            active = true;
+            active = false;
             move_speed = 2;
             rotating_speed = 1;
             _translate = new Point(0, 0);
@@ -1028,26 +1011,27 @@ namespace WindowsFormsApplication3
 
         }
 
-        public Rhombus(Point[] new_points)
+        public Rhombus(Point[] new_points, Point c, double R)
         {
             static_points = new Point[4];
-            static_points[0].X = new_points[1].X;
-            static_points[0].Y = new_points[1].Y;
+            static_points[0].X = new_points[0].X;
+            static_points[0].Y = new_points[0].Y;
 
-            static_points[1].X = new_points[3].X;
-            static_points[1].Y = new_points[3].Y;
+            static_points[1].X = new_points[1].X;
+            static_points[1].Y = new_points[1].Y;
 
             static_points[2].X = new_points[2].X;
             static_points[2].Y = new_points[2].Y;
 
-            static_points[3].X = new_points[4].X;
-            static_points[3].Y = new_points[4].Y;
+            static_points[3].X = new_points[3].X;
+            static_points[3].Y = new_points[3].Y;
 
+            type = 4;
             angle = 0;
             scale = 1;
-            center = new Point(new_points[0].X, new_points[0].Y);
-            R = (norma(static_points[1].X - center.X, static_points[1].Y - center.Y) < norma(static_points[0].X - center.X, static_points[0].Y - center.Y)) ? norma(static_points[0].X - center.X, static_points[0].Y - center.Y) : norma(static_points[1].X - center.X, static_points[1].Y - center.Y);
-            active = true;
+            center = c;
+            this.R = R;
+            active = false;
             move_speed = 2;
             rotating_speed = 1;
             _translate = new Point(0, 0);
@@ -1268,9 +1252,9 @@ namespace WindowsFormsApplication3
         /// Удаляет значение из дерева
         /// </summary>
         /// <param name="data">Удаляемое значение</param>
-        public void Remove(dynamic data)
+        public void Remove(double R)
         {
-            var removeNode = Find(data);
+            var removeNode = Find(R);
             if (removeNode != null)
             {
                 Remove(removeNode);
@@ -1281,14 +1265,14 @@ namespace WindowsFormsApplication3
         /// </summary>
         /// <param name="data">Значение для поиска</param>
         /// <returns></returns>
-        public BinaryTree Find(dynamic data)
+        public BinaryTree Find(double R)
         {
-            if (Data.R == data.R) return this;
-            if (Data.R > data.R)
+            if (Data.R == R) return this;
+            if (Data.R > R)
             {
-                return Find(data, Left);
+                return Find(R, Left);
             }
-            return Find(data, Right);
+            return Find(R, Right);
         }
         /// <summary>
         /// Ищет значение в определённом узле
@@ -1296,16 +1280,16 @@ namespace WindowsFormsApplication3
         /// <param name="data">Значение для поиска</param>
         /// <param name="node">Узел для поиска</param>
         /// <returns></returns>
-        public BinaryTree Find(dynamic data, BinaryTree node)
+        public BinaryTree Find(double R, BinaryTree node)
         {
             if (node == null) return null;
 
-            if (node.Data == data) return node;
-            if (node.Data.R > data.R)
+            if (node.Data.R == R) return node;
+            if (node.Data.R > R)
             {
-                return Find(data, node.Left);
+                return Find(R, node.Left);
             }
-            return Find(data, node.Right);
+            return Find(R, node.Right);
         }
 
         /// <summary>

@@ -30,7 +30,6 @@
         {
             this.components = new System.ComponentModel.Container();
             this.field = new Tao.Platform.Windows.SimpleOpenGlControl();
-            this.btnCreatePrimitive = new System.Windows.Forms.Button();
             this.RenderTime = new System.Windows.Forms.Timer(this.components);
             this.label3 = new System.Windows.Forms.Label();
             this.barRotatingSpeed = new System.Windows.Forms.TrackBar();
@@ -74,16 +73,6 @@
             this.field.KeyDown += new System.Windows.Forms.KeyEventHandler(this.field_Key_Down);
             this.field.MouseClick += new System.Windows.Forms.MouseEventHandler(this.field_Mouse_Click);
             this.field.MouseMove += new System.Windows.Forms.MouseEventHandler(this.field_Mouse_Move);
-            // 
-            // btnCreatePrimitive
-            // 
-            this.btnCreatePrimitive.Location = new System.Drawing.Point(614, 50);
-            this.btnCreatePrimitive.Name = "btnCreatePrimitive";
-            this.btnCreatePrimitive.Size = new System.Drawing.Size(104, 38);
-            this.btnCreatePrimitive.TabIndex = 2;
-            this.btnCreatePrimitive.Text = "Создать примитив";
-            this.btnCreatePrimitive.UseVisualStyleBackColor = true;
-            this.btnCreatePrimitive.Click += new System.EventHandler(this.btn_Create_Primitive);
             // 
             // RenderTime
             // 
@@ -134,7 +123,7 @@
             // 
             // btnCreateArbitrarily
             // 
-            this.btnCreateArbitrarily.Location = new System.Drawing.Point(614, 94);
+            this.btnCreateArbitrarily.Location = new System.Drawing.Point(614, 50);
             this.btnCreateArbitrarily.Name = "btnCreateArbitrarily";
             this.btnCreateArbitrarily.Size = new System.Drawing.Size(104, 38);
             this.btnCreateArbitrarily.TabIndex = 12;
@@ -157,7 +146,7 @@
             // 
             this.cboxCountFigures.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboxCountFigures.FormattingEnabled = true;
-            this.cboxCountFigures.Location = new System.Drawing.Point(614, 177);
+            this.cboxCountFigures.Location = new System.Drawing.Point(613, 120);
             this.cboxCountFigures.Name = "cboxCountFigures";
             this.cboxCountFigures.Size = new System.Drawing.Size(104, 21);
             this.cboxCountFigures.TabIndex = 16;
@@ -166,7 +155,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(613, 141);
+            this.label1.Location = new System.Drawing.Point(614, 91);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(111, 26);
             this.label1.TabIndex = 17;
@@ -202,7 +191,7 @@
             // 
             // btn_Delete_Shape
             // 
-            this.btn_Delete_Shape.Location = new System.Drawing.Point(613, 215);
+            this.btn_Delete_Shape.Location = new System.Drawing.Point(614, 147);
             this.btn_Delete_Shape.Name = "btn_Delete_Shape";
             this.btn_Delete_Shape.Size = new System.Drawing.Size(104, 47);
             this.btn_Delete_Shape.TabIndex = 21;
@@ -299,7 +288,6 @@
             this.Controls.Add(this.label4);
             this.Controls.Add(this.barRotatingSpeed);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.btnCreatePrimitive);
             this.Controls.Add(this.field);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
@@ -318,7 +306,6 @@
         #endregion
 
         private Tao.Platform.Windows.SimpleOpenGlControl field;
-        private System.Windows.Forms.Button btnCreatePrimitive;
         private System.Windows.Forms.Timer RenderTime;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TrackBar barRotatingSpeed;

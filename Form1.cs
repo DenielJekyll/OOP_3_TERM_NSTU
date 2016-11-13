@@ -32,7 +32,7 @@ namespace WindowsFormsApplication3
 
         - если задать все 3 точки как одну (т.е. жать в одну точку 3 раза), то значение t = NaN; 
         функция myMouse() -> left button
-        Тест: вставлен костыль try - cath 
+        Тест: вставлен костыль try - catch 
          */
 
         public Form1()
@@ -810,34 +810,31 @@ namespace WindowsFormsApplication3
         private Point _translate;
         public int type { get; }
 
-        public Parallelogram()
+        public Parallelogram(Point[] new_points, double angle, double scale, Point center, double R, int move_speed, int rotate_speed, Color color, Point transate)
         {
             static_points = new Point[4];
-            static_points[0].X = 200;
-            static_points[0].Y = 200;
+            static_points[0].X = new_points[0].X;
+            static_points[0].Y = new_points[0].Y;
 
-            static_points[1].X = 250;
-            static_points[1].Y = 300;
+            static_points[1].X = new_points[1].X;
+            static_points[1].Y = new_points[1].Y;
 
-            static_points[2].X = 450;
-            static_points[2].Y = 300;
+            static_points[2].X = new_points[2].X;
+            static_points[2].Y = new_points[2].Y;
 
-            static_points[3].X = 400;
-            static_points[3].Y = 200;
+            static_points[3].X = new_points[3].X;
+            static_points[3].Y = new_points[3].Y;
 
             type = 14;
-            angle = 0;
-            scale = 1;
+            this.angle = angle;
+            this.scale = scale;
+            this.center = center;
+            this.R = R;
             active = false;
-            move_speed = 2;
-            
-            rotating_speed = 1;
-            _translate = new Point(0, 0);
-            center = new Point(322, 253);
-            R = norma(static_points[1].X - center.X, static_points[1].Y - center.Y);
-
-            Random rand = new Random();
-            color = Color.FromArgb(rand.Next(256), rand.Next(256), rand.Next(256));
+            this.move_speed = move_speed;
+            this.rotating_speed = rotate_speed;
+            this._translate = transate;
+            this.color = color;
         }
 
         public Parallelogram(Point[] new_points, Point c, double R)
@@ -854,6 +851,8 @@ namespace WindowsFormsApplication3
 
             static_points[3].X = new_points[3].X;
             static_points[3].Y = new_points[3].Y;
+
+            type = 14;
 
             angle = 0;
             scale = 1;
@@ -873,37 +872,36 @@ namespace WindowsFormsApplication3
     {
         private Point _translate;
         public int type { get; }
-        public Pentagon()
+        public Pentagon(Point[] new_points, double angle, double scale, Point center, double R, int move_speed, int rotate_speed, Point translate, Color color)
         {
             static_points = new Point[5];
-            static_points[0].X = 200;
-            static_points[0].Y = 300;
+            static_points[0].X = new_points[1].X;
+            static_points[0].Y = new_points[1].Y;
 
-            static_points[1].X = 350;
-            static_points[1].Y = 400;
+            static_points[1].X = new_points[2].X;
+            static_points[1].Y = new_points[2].Y;
 
-            static_points[2].X = 500;
-            static_points[2].Y = 300;
+            static_points[2].X = new_points[3].X;
+            static_points[2].Y = new_points[3].Y;
 
-            static_points[3].X = 450;
-            static_points[3].Y = 150;
+            static_points[3].X = new_points[4].X;
+            static_points[3].Y = new_points[4].Y;
 
-            static_points[4].X = 250;
-            static_points[4].Y = 150;
+            static_points[4].X = new_points[5].X;
+            static_points[4].Y = new_points[5].Y;
 
             type = 8;
-            angle = 0;
-            scale = 1;
+            this.angle = angle;
+            this.scale = scale;
+            this.center = center;
+            this.R = R;
             active = false;
-            move_speed = 2;
-            rotating_speed = 1;
-            _translate = new Point(0, 0);
-            center = new Point(350, 275);
-            R = norma(static_points[1].X - center.X, static_points[1].Y - center.Y);
+            this.move_speed = move_speed;
+            this.rotating_speed = rotate_speed;
+            _translate = translate;
 
-            Random rand = new Random();
-            color = Color.FromArgb(rand.Next(256), rand.Next(256), rand.Next(256));
-            
+            this.color = color;
+
         }
 
         public Pentagon(Point[] new_points, double R)
@@ -996,34 +994,32 @@ namespace WindowsFormsApplication3
     {
         private Point _translate;
         public int type { get; }
-        public Rhombus()
+        public Rhombus(Point[] new_points, double angle, double scale, Point center, double R, int move_speed, int rotate_speed, Point translate, Color color)
         {
-            
             static_points = new Point[4];
-            static_points[0].X = 200;
-            static_points[0].Y = 250;
+            static_points[0].X = new_points[0].X;
+            static_points[0].Y = new_points[0].Y;
 
-            static_points[1].X = 300;
-            static_points[1].Y = 350;
+            static_points[1].X = new_points[1].X;
+            static_points[1].Y = new_points[1].Y;
 
-            static_points[2].X = 400;
-            static_points[2].Y = 250;
+            static_points[2].X = new_points[2].X;
+            static_points[2].Y = new_points[2].Y;
 
-            static_points[3].X = 300;
-            static_points[3].Y = 150;
+            static_points[3].X = new_points[3].X;
+            static_points[3].Y = new_points[3].Y;
 
             type = 4;
-            angle = 0;
-            scale = 1;
+            this.angle = angle;
+            this.scale = scale;
+            this.center = center;
+            this.R = R;
             active = false;
-            move_speed = 2;
-            rotating_speed = 1;
-            _translate = new Point(0, 0);
-            center = new Point(300, 250);
-            R = norma(static_points[1].X - center.X, static_points[1].Y - center.Y);
-
-            Random rand = new Random();
-            color = Color.FromArgb(rand.Next(256), rand.Next(256), rand.Next(256));
+            this.move_speed = move_speed;
+            this.rotating_speed = rotate_speed;
+            this._translate = translate;
+            
+            this.color = color;
 
         }
 

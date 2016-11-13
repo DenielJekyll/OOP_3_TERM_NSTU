@@ -273,8 +273,8 @@ namespace WindowsFormsApplication3
                     Point center = new Point(temp_points[1].X + Convert.ToInt32((temp_points[1].X - temp_points[3].X) * t),
                     temp_points[1].Y + Convert.ToInt32((temp_points[1].Y - temp_points[3].Y) * t));
                     double R = norma(temp_points[1].X - center.X, temp_points[1].Y - center.Y);
-                    Figures.Insert(new Parallelogram(temp_points, center, R));
                     uint q = index();
+                    Figures.Insert(new Parallelogram(temp_points, center, R, q));
                     figuresList.Add(q, R);
                     cboxCountFigures.Items.Add(q);
                     cboxCountFigures.SelectedItem = q;
@@ -323,8 +323,8 @@ namespace WindowsFormsApplication3
                     for (int i = 0; i < 5; i++)
                         temp_points[i] = temp_points[i + 1];
                     double R = norma(temp_points[0].X - center.X, temp_points[0].Y - center.Y);
-                    Figures.Insert(new Pentagon(temp_points, center, R));
                     uint q = index();
+                    Figures.Insert(new Pentagon(temp_points, center, R, q));
                     figuresList.Add(q, R);
                     cboxCountFigures.Items.Add(q);
                     cboxCountFigures.SelectedItem = q;
@@ -373,8 +373,8 @@ namespace WindowsFormsApplication3
                     temp_points[1].X = center.X + Convert.ToInt32(pX * (-t));
                     temp_points[1].Y = center.Y + Convert.ToInt32(pY * (-t));
                     double R = (norma(temp_points[1].X - center.X, temp_points[1].Y - center.Y) < norma(temp_points[0].X - center.X, temp_points[0].Y - center.Y)) ? norma(temp_points[0].X - center.X, temp_points[0].Y - center.Y) : norma(temp_points[1].X - center.X, temp_points[1].Y - center.Y);
-                    Figures.Insert(new Rhombus(temp_points, center, R));
                     uint q = index();
+                    Figures.Insert(new Rhombus(temp_points, center, R, q));
                     figuresList.Add(q, R);
                     cboxCountFigures.Items.Add(q);
                     cboxCountFigures.SelectedItem = q;
@@ -414,7 +414,7 @@ namespace WindowsFormsApplication3
         {
             if (count_figures > 0)
             {
-                dynamic temp = Figures.Find(figuresList[pointer_shape]).Data;
+                dynamic temp = Figures.Find(figuresList[pointer_shape], pointer_shape).Data;
                 switch (e.KeyCode)
                 {
                     // W A S D отвечают за перемещение по x и y 
@@ -524,7 +524,7 @@ namespace WindowsFormsApplication3
         {
             if (count_figures > 0)
             {
-                dynamic temp = Figures.Find(figuresList[pointer_shape]).Data;
+                dynamic temp = Figures.Find(figuresList[pointer_shape], pointer_shape).Data;
                 if (e.Delta > 0)
                     if (count_figures > 0)
                         temp.scale = -0.05;
@@ -549,7 +549,7 @@ namespace WindowsFormsApplication3
         {
             if (count_figures > 0)
             {
-                dynamic temp = Figures.Find(figuresList[pointer_shape]).Data;
+                dynamic temp = Figures.Find(figuresList[pointer_shape], pointer_shape).Data;
                 temp.rotating_speed = barRotatingSpeed.Value;
                 field.Focus();
             }
@@ -559,7 +559,7 @@ namespace WindowsFormsApplication3
         {
             if (count_figures > 0)
             {
-                dynamic temp = Figures.Find(figuresList[pointer_shape]).Data;
+                dynamic temp = Figures.Find(figuresList[pointer_shape], pointer_shape).Data;
                 temp.move_speed = barMoveSpeed.Value;
                 field.Focus();
             }
@@ -569,7 +569,7 @@ namespace WindowsFormsApplication3
         {
             if (count_figures > 0)
             {
-                dynamic temp = Figures.Find(figuresList[pointer_shape]).Data;
+                dynamic temp = Figures.Find(figuresList[pointer_shape], pointer_shape).Data;
                 ColorDialog MyDialog = new ColorDialog();
                 MyDialog.AllowFullOpen = false;
                 MyDialog.ShowHelp = true;
@@ -640,13 +640,13 @@ namespace WindowsFormsApplication3
                     case PARALLELOGRAM:
                         center = new Point(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
                         R = norma(temp_points[1].X - center.X, temp_points[1].Y - center.Y);
-                        Figures.Insert(new Parallelogram(temp_points, center, R));
                         q = index();
+                        Figures.Insert(new Parallelogram(temp_points, center, R, q));
                         figuresList.Add(q, R);
                         cboxCountFigures.Items.Add(q);
                         cboxCountFigures.SelectedItem = q;
                         count_figures++;
-                        Parallelogram p = Figures.Find(figuresList[q]).Data;
+                        Parallelogram p = Figures.Find(figuresList[q], q).Data;
                         p.angle = Convert.ToDouble(reader.ReadLine());
                         line = reader.ReadLine();
                         p.rotating_speed = Convert.ToInt32(line.Split(' ')[1]);
@@ -660,13 +660,13 @@ namespace WindowsFormsApplication3
                     case PENTAGON:
                         center = new Point(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
                         R = norma(temp_points[1].X - center.X, temp_points[1].Y - center.Y);
-                        Figures.Insert(new Pentagon(temp_points, center, R));
                         q = index();
+                        Figures.Insert(new Pentagon(temp_points, center, R, q));
                         figuresList.Add(q, R);
                         cboxCountFigures.Items.Add(q);
                         cboxCountFigures.SelectedItem = q;
                         count_figures++;
-                        Pentagon pentagon = Figures.Find(figuresList[q]).Data;
+                        Pentagon pentagon = Figures.Find(figuresList[q], q).Data;
                         pentagon.angle = Convert.ToDouble(reader.ReadLine());
                         line = reader.ReadLine();
                         pentagon.rotating_speed = Convert.ToInt32(line.Split(' ')[1]);
@@ -680,13 +680,13 @@ namespace WindowsFormsApplication3
                     case RHOMBUS:
                         center = new Point(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
                         R = norma(temp_points[1].X - center.X, temp_points[1].Y - center.Y);
-                        Figures.Insert(new Rhombus(temp_points, center, R));
                         q = index();
+                        Figures.Insert(new Rhombus(temp_points, center, R, q));
                         figuresList.Add(q, R);
                         cboxCountFigures.Items.Add(q);
                         cboxCountFigures.SelectedItem = q;
                         count_figures++;
-                        Rhombus rhombus = Figures.Find(figuresList[q]).Data;
+                        Rhombus rhombus = Figures.Find(figuresList[q], q).Data;
                         rhombus.angle = Convert.ToDouble(reader.ReadLine());
                         line = reader.ReadLine();
                         rhombus.rotating_speed = Convert.ToInt32(line.Split(' ')[1]);
@@ -718,10 +718,10 @@ namespace WindowsFormsApplication3
 
         private void cbox_Selected_Item_Change(object sender, EventArgs e)
         {
-            dynamic temp = Figures.Find(figuresList[pointer_shape]).Data;
+            dynamic temp = Figures.Find(figuresList[pointer_shape], pointer_shape).Data;
             temp.active = false;
             pointer_shape = Convert.ToUInt32(cboxCountFigures.Text);
-            temp = Figures.Find(figuresList[pointer_shape]).Data;
+            temp = Figures.Find(figuresList[pointer_shape], pointer_shape).Data;
             temp.active = true;
             barMoveSpeed.Value = temp.move_speed;
             barRotatingSpeed.Value = temp.rotating_speed;
@@ -734,7 +734,7 @@ namespace WindowsFormsApplication3
         {
             if (count_figures > 0)
             {
-                Figures.Remove(Figures.Find(figuresList[pointer_shape]));
+                Figures.Remove(Figures.Find(figuresList[pointer_shape], pointer_shape));
                 figuresList.Remove(pointer_shape);
                 cboxCountFigures.Items.RemoveAt(cboxCountFigures.SelectedIndex);
                 count_figures--;
@@ -758,6 +758,7 @@ namespace WindowsFormsApplication3
         public bool active { set; get; }
         public int move_speed { set; get; }
         public int rotating_speed { set; get; }
+        public uint index { set; get; } 
         public Point[] static_points { set; get; }
         public Point translate { get { return _translate; } }
         public double scale { set { _scale += value; } get { return _scale; } }
@@ -779,7 +780,7 @@ namespace WindowsFormsApplication3
         private Point _translate;
         public int type { get; }
 
-        public Parallelogram(Point[] new_points, Point c, double R)
+        public Parallelogram(Point[] new_points, Point c, double R, uint index)
         {
             static_points = new Point[4];
             static_points[0].X = new_points[0].X;
@@ -796,6 +797,7 @@ namespace WindowsFormsApplication3
 
             type = 14;
 
+            this.index = index;
             angle = 0;
             scale = 1;
             center = c;
@@ -815,7 +817,7 @@ namespace WindowsFormsApplication3
         private Point _translate;
         public int type { get; }
        
-        public Pentagon(Point[] new_points, Point center, double R)
+        public Pentagon(Point[] new_points, Point center, double R, uint index)
         {
             static_points = new Point[5];
             static_points[0].X = new_points[0].X;
@@ -833,6 +835,7 @@ namespace WindowsFormsApplication3
             static_points[4].X = new_points[4].X;
             static_points[4].Y = new_points[4].Y;
 
+            this.index = index;
             type = 8;
             angle = 0;
             scale = 1;
@@ -869,7 +872,7 @@ namespace WindowsFormsApplication3
         private Point _translate;
         public int type { get; }
 
-        public Rhombus(Point[] new_points, Point c, double R)
+        public Rhombus(Point[] new_points, Point c, double R, uint index)
         {
             static_points = new Point[4];
             static_points[0].X = new_points[0].X;
@@ -884,6 +887,7 @@ namespace WindowsFormsApplication3
             static_points[3].X = new_points[3].X;
             static_points[3].Y = new_points[3].Y;
 
+            this.index = index;
             type = 4;
             angle = 0;
             scale = 1;
@@ -1110,9 +1114,9 @@ namespace WindowsFormsApplication3
         /// Удаляет значение из дерева
         /// </summary>
         /// <param name="data">Удаляемое значение</param>
-        public void Remove(double R)
+        public void Remove(double R, uint index)
         {
-            var removeNode = Find(R);
+            var removeNode = Find(R, index);
             if (removeNode != null)
             {
                 Remove(removeNode);
@@ -1123,14 +1127,14 @@ namespace WindowsFormsApplication3
         /// </summary>
         /// <param name="data">Значение для поиска</param>
         /// <returns></returns>
-        public BinaryTree Find(double R)
+        public BinaryTree Find(double R, uint index)
         {
-            if (Data.R == R) return this;
+            if (Data.R == R && Data.index == index) return this;
             if (Data.R > R)
             {
-                return Find(R, Left);
+                return Find(R, Left, index);
             }
-            return Find(R, Right);
+            return Find(R, Right, index);
         }
         /// <summary>
         /// Ищет значение в определённом узле
@@ -1138,16 +1142,16 @@ namespace WindowsFormsApplication3
         /// <param name="data">Значение для поиска</param>
         /// <param name="node">Узел для поиска</param>
         /// <returns></returns>
-        public BinaryTree Find(double R, BinaryTree node)
+        private BinaryTree Find(double R, BinaryTree node, uint index)
         {
             if (node == null) return null;
 
-            if (node.Data.R == R) return node;
+            if (node.Data.R == R && node.Data.index == index) return node;
             if (node.Data.R > R)
             {
-                return Find(R, node.Left);
+                return Find(R, node.Left, index);
             }
-            return Find(R, node.Right);
+            return Find(R, node.Right, index);
         }
 
         /// <summary>

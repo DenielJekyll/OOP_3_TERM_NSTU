@@ -237,11 +237,16 @@ namespace WindowsFormsApplication3
         {
             if (count_figures > 0)
             {
-                int i;
+                uint i;
                 // починить поиск индекса
-                for (i = 0; i <= cboxCountFigures.Items.Count; i++)
-                    if (!cboxCountFigures.Items[i].Equals(i+1)) return (uint)i+1;
-                return (uint)i + 2;
+                for (i = 1; i <= cboxCountFigures.Items.Count; i++)
+                    if (!figuresList.ContainsKey(i))
+                    {
+                        Console.WriteLine("Returned Key " + i);
+                        return i;
+                    }
+                Console.WriteLine("nof found " + (i));
+                return i;
             }
             return 1;
         }
@@ -261,8 +266,8 @@ namespace WindowsFormsApplication3
                 count_click = 0;
                 flag_input = false;
                 lock_Interface(true);
-                //try
-                //{
+                try
+                {
                     double t = (double)(temp_points[0].Y - temp_points[2].Y) / (temp_points[0].Y - temp_points[1].Y - temp_points[2].Y + temp_points[1].Y);
                     temp_points[3].X = temp_points[0].X + Convert.ToInt32((temp_points[2].X - temp_points[1].X) * t);
                     temp_points[3].Y = temp_points[0].Y + Convert.ToInt32((temp_points[2].Y - temp_points[1].Y) * t);
@@ -276,69 +281,79 @@ namespace WindowsFormsApplication3
 
                     Figures.Insert(new Parallelogram(temp_points, center, R));
 
-                    
 
-                    figuresList.Add(index(), R);
+                    uint q = index();
+                    figuresList.Add(q , R);
 
-                    cboxCountFigures.Items.Add(index());
-                    
-                    cboxCountFigures.SelectedItem = index();
+                    cboxCountFigures.Items.Add(q);
+
+                    cboxCountFigures.SelectedItem = q;
 
                     count_figures++;
                     for (int i = 0; i < 5; i++)
                         temp_points[i] = new Point(-1, -1);
 
-                //}
-                //      catch (Exception)
-                //{
-                //    exeption_label.Text = "Некоректно заданы точки, фигура не построена";
-                //    for (int i = 0; i < 5; i++)
-                //        temp_points[i] = new Point(-1, -1);
-                //}
+                }
+                catch (Exception)
+                {
+                    exeption_label.Text = "Некоректно заданы точки, фигура не построена";
+                    for (int i = 0; i < 5; i++)
+                        temp_points[i] = new Point(-1, -1);
+                }
 
-        }
+            }
         }
 
         private void create_Pentagon(MouseEventArgs e)
         {
-        //    if (count_click < 2)
-        //    {
-        //        temp_points[count_click].X = e.X;
-        //        temp_points[count_click].Y = field.Height - e.Y;
-        //        count_click++;
-        //    }
-        //    else
-        //    {
-        //        temp_points[count_click].X = e.X;
-        //        temp_points[count_click].Y = field.Height - e.Y;
-        //        count_click = 0;
-        //        flag_input = false;
-        //        lock_Interface(true);
-        //        try { 
-        //        double u, t;
-        //        double pX, pY;
-        //        t = Math.Sqrt(Math.Pow(e.X - temp_points[0].X, 2) + Math.Pow(field.Height - e.Y - temp_points[0].Y, 2));
-        //        u = Math.Acos((temp_points[1].X - temp_points[0].X) / Math.Sqrt(Math.Pow((temp_points[1].X - temp_points[0].X), 2) + Math.Pow((temp_points[1].Y - temp_points[0].Y), 2)));
-        //        for (int i = 1; i < 6; i++)
-        //        {
-        //            pX = Math.Cos(u);
-        //            pY = Math.Sin(u);
-        //            temp_points[i].X = temp_points[0].X + Convert.ToInt32(pX * t);
-        //            temp_points[i].Y = temp_points[0].Y + Convert.ToInt32(pY * t);
-        //            u += Math.PI * 0.4;
-        //        }
+            if (count_click < 2)
+            {
+                temp_points[count_click].X = e.X;
+                temp_points[count_click].Y = field.Height - e.Y;
+                count_click++;
+            }
+            else
+            {
+                temp_points[count_click].X = e.X;
+                temp_points[count_click].Y = field.Height - e.Y;
+                count_click = 0;
+                flag_input = false;
+                lock_Interface(true);
+                try
+                {
+                    double u, t;
+                    double pX, pY;
+                    t = Math.Sqrt(Math.Pow(e.X - temp_points[0].X, 2) + Math.Pow(field.Height - e.Y - temp_points[0].Y, 2));
+                    u = Math.Acos((temp_points[1].X - temp_points[0].X) / Math.Sqrt(Math.Pow((temp_points[1].X - temp_points[0].X), 2) + Math.Pow((temp_points[1].Y - temp_points[0].Y), 2)));
+                    for (int i = 1; i < 6; i++)
+                    {
+                        pX = Math.Cos(u);
+                        pY = Math.Sin(u);
+                        temp_points[i].X = temp_points[0].X + Convert.ToInt32(pX * t);
+                        temp_points[i].Y = temp_points[0].Y + Convert.ToInt32(pY * t);
+                        u += Math.PI * 0.4;
+                    }
 
-        //        Figures.Insert(new Pentagon(temp_points));
-        //        cboxCountFigures.Items.Add(count_figures++);
-        //        cboxCountFigures.SelectedItem = count_figures - 1;
-        //        }
-        //        catch (Exception)
-        //        {
-        //            exeption_label.Text = "Некоректно заданы точки, фигура не построена";
-        //        }
-        //        for (int i = 0; i < 6; i++)
-        //            temp_points[i] = new Point(-1, -1);
-        //    }
+                    double R = norma(temp_points[1].X - temp_points[0].X, temp_points[1].Y - temp_points[0].Y);
+
+                    Figures.Insert(new Pentagon(temp_points, R));
+
+                    uint q = index();
+                    figuresList.Add(q, R);
+
+                    cboxCountFigures.Items.Add(q);
+
+                    cboxCountFigures.SelectedItem = q;
+
+                    count_figures++;
+                }
+                catch (Exception)
+                {
+                    exeption_label.Text = "Некоректно заданы точки, фигура не построена";
+                }
+                for (int i = 0; i < 6; i++)
+                    temp_points[i] = new Point(-1, -1);
+            }
 
         }
 
@@ -381,13 +396,14 @@ namespace WindowsFormsApplication3
 
                 Figures.Insert(new Rhombus(temp_points, center, R));
 
-                count_figures++;
+                    uint q = index();
+                    figuresList.Add(q, R);
 
-                figuresList.Add(count_figures, R);
+                    cboxCountFigures.Items.Add(q);
 
-                cboxCountFigures.Items.Add(count_figures);
+                    cboxCountFigures.SelectedItem = q;
 
-                cboxCountFigures.SelectedItem = count_figures;
+                    count_figures++;
 
                 }
                 catch (Exception)
@@ -890,7 +906,7 @@ namespace WindowsFormsApplication3
             
         }
 
-        public Pentagon(Point[] new_points)
+        public Pentagon(Point[] new_points, double R)
         {
             static_points = new Point[5];
             static_points[0].X = new_points[1].X;
@@ -912,7 +928,7 @@ namespace WindowsFormsApplication3
             angle = 0;
             scale = 1;
             center = new Point(new_points[0].X, new_points[0].Y);
-            R = norma(static_points[1].X - center.X, static_points[1].Y - center.Y);
+            this.R = R;
             active = false;
             move_speed = 2;
             rotating_speed = 1;

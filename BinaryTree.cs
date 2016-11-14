@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Tree
+﻿namespace Tree
 {
 
     public enum BinSide
@@ -12,9 +6,7 @@ namespace Tree
         Left,
         Right
     }
-    /// <summary>
-    /// Бинарное дерево поиска
-    /// </summary>
+    // Бинарное дерево поиска
     public class BinaryTree
     {
 
@@ -22,13 +14,11 @@ namespace Tree
         public BinaryTree Left { get; set; }
         public BinaryTree Right { get; set; }
         public BinaryTree Parent { get; set; }
-
-        /// <summary>
-        /// Вставляет целочисленное значение в дерево
-        /// </summary>
-        /// <param name="data">Значение, которое добавится в дерево</param>
+        private long countElements = 0;
+        // Вставляет целочисленное значение в дерево
         public void Insert(dynamic data)
         {
+            countElements += 1;
             if (Data == null)
             {
                 Data = data;
@@ -47,12 +37,7 @@ namespace Tree
             }
         }
 
-        /// <summary>
-        /// Вставляет значение в определённый узел дерева
-        /// </summary>
-        /// <param name="data">Значение</param>
-        /// <param name="node">Целевой узел для вставки</param>
-        /// <param name="parent">Родительский узел</param>
+        // Вставляет значение в определённый узел дерева
         private void Insert(dynamic data, BinaryTree node, BinaryTree parent)
         {
             if (node.Data == null)
@@ -72,12 +57,8 @@ namespace Tree
                 Insert(data, node.Left, node);
             }
         }
-        /// <summary>
-        /// Уставляет узел в определённый узел дерева
-        /// </summary>
-        /// <param name="data">Вставляемый узел</param>
-        /// <param name="node">Целевой узел</param>
-        /// <param name="parent">Родительский узел</param>
+
+        // Уставляет узел в определённый узел дерева
         private void Insert(BinaryTree data, BinaryTree node, BinaryTree parent)
         {
             if (node.Data == null)
@@ -99,11 +80,8 @@ namespace Tree
                 Insert(data, node.Left, node);
             }
         }
-        /// <summary>
+       
         /// Определяет, в какой ветви для родительского лежит данный узел
-        /// </summary>
-        /// <param name="node"></param>
-        /// <returns></returns>
         private BinSide? MeForParent(BinaryTree node)
         {
             if (node.Parent == null) return null;
@@ -111,13 +89,10 @@ namespace Tree
             if (node.Parent.Right == node) return BinSide.Right;
             return null;
         }
-
-        /// <summary>
-        /// Удаляет узел из дерева
-        /// </summary>
-        /// <param name="node">Удаляемый узел</param>
-        public void Remove(BinaryTree node)
+        
+        private void Remove(BinaryTree node)
         {
+            countElements -= 1;
             if (node == null) return;
             var me = MeForParent(node);
 
@@ -139,33 +114,22 @@ namespace Tree
                     Insert(bufLeft, node, node);
                 return;
             }
-
-
             //Если у узла нет дочерних элементов, его можно смело удалять
             if (node.Left == null && node.Right == null)
             {
                 if (me == BinSide.Left)
-                {
                     node.Parent.Left = null;
-                }
                 else
-                {
                     node.Parent.Right = null;
-                }
                 return;
             }
             //Если нет левого дочернего, то правый дочерний становится на место удаляемого
             if (node.Left == null)
             {
                 if (me == BinSide.Left)
-                {
                     node.Parent.Left = node.Right;
-                }
                 else
-                {
                     node.Parent.Right = node.Right;
-                }
-
                 node.Right.Parent = node.Parent;
                 return;
             }
@@ -173,30 +137,18 @@ namespace Tree
             if (node.Right == null)
             {
                 if (me == BinSide.Left)
-                {
                     node.Parent.Left = node.Left;
-                }
                 else
-                {
                     node.Parent.Right = node.Left;
-                }
-
                 node.Left.Parent = node.Parent;
                 return;
             }
 
-            //Если присутствуют оба дочерних узла
-            //то правый ставим на место удаляемого
-            //а левый вставляем в правый
-
+            //Если присутствуют оба дочерних узла, то правый ставим на место удаляемого, а левый вставляем в правый
             if (me == BinSide.Left)
-            {
                 node.Parent.Left = node.Right;
-            }
             if (me == BinSide.Right)
-            {
                 node.Parent.Right = node.Right;
-            }
             if (me == null)
             {
                 var bufLeft = node.Left;
@@ -213,77 +165,32 @@ namespace Tree
                 Insert(node.Left, node.Right, node.Right);
             }
         }
-        /// <summary>
-        /// Удаляет значение из дерева
-        /// </summary>
-        /// <param name="data">Удаляемое значение</param>
+        // Удаляет значение из дерева
         public void Remove(double R, uint index)
         {
             var removeNode = Find(R, index);
-            if (removeNode != null)
-            {
-                Remove(removeNode);
-            }
+            if (removeNode != null) Remove(removeNode);
         }
-        /// <summary>
-        /// Ищет узел с заданным значением
-        /// </summary>
-        /// <param name="data">Значение для поиска</param>
-        /// <returns></returns>
+        // Ищет узел с заданным значением
         public BinaryTree Find(double R, uint index)
         {
             if (Data.R == R && Data.index == index) return this;
-            if (Data.R > R)
-            {
-                return Find(R, Left, index);
-            }
+            if (Data.R > R) return Find(R, Left, index);
             return Find(R, Right, index);
         }
-        /// <summary>
-        /// Ищет значение в определённом узле
-        /// </summary>
-        /// <param name="data">Значение для поиска</param>
-        /// <param name="node">Узел для поиска</param>
-        /// <returns></returns>
+        // Ищет значение в определённом узле
         private BinaryTree Find(double R, BinaryTree node, uint index)
         {
             if (node == null) return null;
-
             if (node.Data.R == R && node.Data.index == index) return node;
-            if (node.Data.R > R)
-            {
-                return Find(R, node.Left, index);
-            }
+            if (node.Data.R > R) return Find(R, node.Left, index);
             return Find(R, node.Right, index);
         }
-
-        /// <summary>
+        
         /// Количество элементов в дереве
-        /// </summary>
-        /// <returns></returns>
         public long CountElements()
         {
-            return CountElements(this);
+            return countElements;
         }
-        /// <summary>
-        /// Количество элементов в определённом узле
-        /// </summary>
-        /// <param name="node">Узел для подсчета</param>
-        /// <returns></returns>
-        private long CountElements(BinaryTree node)
-        {
-            long count = 1;
-            if (node.Right != null)
-            {
-                count += CountElements(node.Right);
-            }
-            if (node.Left != null)
-            {
-                count += CountElements(node.Left);
-            }
-            return count;
-        }
-
-
     }
 }

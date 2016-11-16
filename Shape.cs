@@ -7,7 +7,7 @@ namespace Shapes
     public class Shape
     {
         private double _scale;
-        private Point _translate;
+        public double _translateX, _translateY;
         public double R { get; set; }
         public Color color { set; get; }
         public Point center { set; get; }
@@ -17,7 +17,6 @@ namespace Shapes
         public int rotating_speed { set; get; }
         public uint index { set; get; }
         public Point[] static_points { set; get; }
-        public Point translate { get { return _translate; } }
         public double scale { set { _scale += value; } get { return _scale; } }
 
         public void toRotate(double angle)
@@ -25,16 +24,15 @@ namespace Shapes
             this.angle += angle * Math.PI / 10 * rotating_speed;
         }
 
-        public void setTranslate(int x, int y)
+        public void setTranslate(double x, double y)
         {
-            _translate.X += x;
-            _translate.Y += y;
+            _translateX += x;
+            _translateY += y;
         }
     }
 
     public class Parallelogram : Shape
     {
-        private Point _translate;
         public int type { get; }
 
         public Parallelogram(Point[] new_points, Point c, double R, uint index)
@@ -63,7 +61,8 @@ namespace Shapes
             move_speed = 2;
             this.index = index;
             rotating_speed = 1;
-            _translate = new Point(0, 0);
+            _translateX = 0;
+            _translateY = 0;
             Random rand = new Random();
             color = Color.FromArgb(rand.Next(256), rand.Next(256), rand.Next(256));
         }

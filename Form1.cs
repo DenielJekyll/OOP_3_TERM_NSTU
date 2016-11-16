@@ -48,7 +48,9 @@ namespace WindowsFormsApplication3
             clear();
             // инициализация Glut 
             Glut.glutInit();
-            Glut.glutInitDisplayMode(Glut.GLUT_RGB | Glut.GLUT_SINGLE);
+            Glut.glutInitDisplayMode(Glut.GLUT_RGB | Glut.GLUT_DOUBLE | Glut.GLUT_MULTISAMPLE);
+            Glut.glutDisplayFunc(Draw);
+            Glut.glutIdleFunc(Draw);
             // очистка окна 
             Gl.glClearColor(0, 0, 0, 1);
             // установка порта вывода в соответствии с размерами элемента anT 
@@ -63,6 +65,16 @@ namespace WindowsFormsApplication3
             Glu.gluOrtho2D(0.0, (float)field.Width, 0.0, (float)field.Height);
             Gl.glMatrixMode(Gl.GL_MODELVIEW);
             Gl.glLoadIdentity();
+            Gl.glBlendFunc(Gl.GL_SRC_ALPHA, Gl.GL_ONE_MINUS_SRC_ALPHA);
+            Gl.glEnable(Gl.GL_BLEND);
+            Gl.glEnable(Gl.GL_POINT_SMOOTH);
+            Gl.glHint(Gl.GL_POINT_SMOOTH_HINT, Gl.GL_NICEST);
+            // Сглаживание линий
+            Gl.glEnable(Gl.GL_LINE_SMOOTH);
+            Gl.glHint(Gl.GL_LINE_SMOOTH_HINT, Gl.GL_NICEST);
+            // Сглаживание полигонов    
+            Gl.glEnable(Gl.GL_POLYGON_SMOOTH);
+            Gl.glHint(Gl.GL_POLYGON_SMOOTH_HINT, Gl.GL_NICEST);
             cboxSelectedType.SelectedIndex = 0;
         }
 
@@ -96,10 +108,10 @@ namespace WindowsFormsApplication3
                         queue.Enqueue(queue.Peek().Right);
                     temp = queue.Dequeue().Data;
                     Gl.glPushMatrix();
-                    Gl.glTranslated(temp.translate.X, temp.translate.Y, 0.0f);
+                    Gl.glTranslated(temp._translateX , temp._translateY , 0.0f);
                     Gl.glTranslated(temp.center.X, temp.center.Y, 0.0f);
                     Gl.glScaled(temp.scale, temp.scale, 1);
-                    Gl.glRotated(temp.angle, 0, 0, 1);
+                    Gl.glRotated(temp.angle , 0, 0, 1);
                     Gl.glTranslated(-temp.center.X, -temp.center.Y, 0.0f);
                     type = temp.type;
                     Gl.glColor3ub(temp.color.R, temp.color.G, temp.color.B);
@@ -112,7 +124,10 @@ namespace WindowsFormsApplication3
                             draw_Quadrangle(temp);
                             break;
                     }
+
+                    
                     Gl.glPopMatrix();
+                    
                 }
             }
             if (flag_input)
@@ -163,6 +178,7 @@ namespace WindowsFormsApplication3
                         Gl.glEnd();
                         break;
                     default:
+                        Glut.glutSwapBuffers();
                         break;
                 }
             Gl.glDisable(Gl.GL_LINE_STIPPLE);
@@ -243,6 +259,7 @@ namespace WindowsFormsApplication3
                 Gl.glVertex2d(pentagon.center.X, pentagon.center.Y);
                 Gl.glEnd();
             }
+            
         }
 
         private uint index()
@@ -251,7 +268,7 @@ namespace WindowsFormsApplication3
             {
                 for (uint i = 1; i <= cboxCountFigures.Items.Count; i++)
                     if (!figuresList.ContainsKey(i)) return i;
-                return (uint)cboxCountFigures.Items.Count;
+                return (uint)cboxCountFigures.Items.Count +1;
             }
             return 1;
         }
@@ -373,16 +390,16 @@ namespace WindowsFormsApplication3
             {
                 // W A S D отвечают за перемещение по x и y 
                 case Keys.W:
-                    temp.setTranslate(0, temp.move_speed);
+                    temp.setTranslate(0, temp.move_speed * 0.03);
                     break;
                 case Keys.S:
-                    temp.setTranslate(0, -temp.move_speed);
+                    temp.setTranslate(0, -temp.move_speed * 0.03);
                     break;
                 case Keys.A:
-                    temp.setTranslate(-temp.move_speed, 0);
+                    temp.setTranslate(-temp.move_speed * 0.03, 0);
                     break;
                 case Keys.D:
-                    temp.setTranslate(temp.move_speed, 0);
+                    temp.setTranslate(temp.move_speed * 0.03, 0);
                     break;
                 // Е и Q отвечают за поворот
                 case Keys.E:
@@ -518,7 +535,7 @@ namespace WindowsFormsApplication3
         private void move_Speed_Change(object sender, EventArgs e)
         {
             if (ShapesTree.CountElements() == 0) return;
-            ShapesTree.Find(figuresList[pointer_shape], pointer_shape).Data.temp.move_speed = barMoveSpeed.Value;
+            ShapesTree.Find(figuresList[pointer_shape], pointer_shape).Data.move_speed = barMoveSpeed.Value;
             field.Focus();
         }
 
@@ -684,6 +701,7 @@ namespace WindowsFormsApplication3
             ShapesTree.Remove(figuresList[pointer_shape], pointer_shape);
             figuresList.Remove(pointer_shape);
             cboxCountFigures.Items.RemoveAt(cboxCountFigures.SelectedIndex);
+            long t = ShapesTree.CountElements();
             pointer_shape = (ShapesTree.CountElements() > 0) ? (uint)cboxCountFigures.Items[(int)ShapesTree.CountElements() - 1] : 1;
             cboxCountFigures.SelectedItem = pointer_shape;
             field.Focus();

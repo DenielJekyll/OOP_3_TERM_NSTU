@@ -77,7 +77,7 @@
             // RenderTime
             // 
             this.RenderTime.Enabled = true;
-            this.RenderTime.Interval = 30;
+            this.RenderTime.Interval = 10;
             this.RenderTime.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // label3
@@ -93,6 +93,7 @@
             // 
             this.barRotatingSpeed.LargeChange = 1;
             this.barRotatingSpeed.Location = new System.Drawing.Point(38, 636);
+            this.barRotatingSpeed.Maximum = 50;
             this.barRotatingSpeed.Minimum = 1;
             this.barRotatingSpeed.Name = "barRotatingSpeed";
             this.barRotatingSpeed.Size = new System.Drawing.Size(304, 45);
@@ -113,7 +114,7 @@
             // 
             this.barMoveSpeed.LargeChange = 1;
             this.barMoveSpeed.Location = new System.Drawing.Point(38, 567);
-            this.barMoveSpeed.Maximum = 11;
+            this.barMoveSpeed.Maximum = 500;
             this.barMoveSpeed.Minimum = 2;
             this.barMoveSpeed.Name = "barMoveSpeed";
             this.barMoveSpeed.Size = new System.Drawing.Size(304, 45);
@@ -290,6 +291,7 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.field);
             this.Controls.Add(this.menuStrip1);
+            this.DoubleBuffered = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";

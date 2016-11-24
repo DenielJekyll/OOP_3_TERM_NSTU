@@ -360,6 +360,7 @@ namespace WindowsFormsApplication3
                 double pX, pY;
                 t = norma(e.X - temp_points[0].X, field.Height - e.Y - temp_points[0].Y);
                 u = Math.Acos((temp_points[1].X - temp_points[0].X) / norma(temp_points[1].X - temp_points[0].X, temp_points[1].Y - temp_points[0].Y));
+                u = (temp_points[0].Y > temp_points[1].Y ? -u : u);
                 for (int i = 1; i < 6; i++)
                 {
                     pX = Math.Cos(u);
@@ -394,7 +395,8 @@ namespace WindowsFormsApplication3
             double pX, pY;
             try
             {
-                u = Math.Acos((temp_points[0].X - center.X) / norma(temp_points[0].X - center.X, temp_points[0].Y - center.Y)) + Math.PI / 2;
+                u = Math.Acos((temp_points[0].X - center.X) / norma(temp_points[0].X - center.X, temp_points[0].Y - center.Y));
+                u = (center.Y > temp_points[0].Y ? -u : u) + Math.PI / 2;
                 pX = Math.Cos(u);
                 pY = Math.Sin(u);
                 t = norma(e.X - center.X, field.Height - e.Y - center.Y);
@@ -504,7 +506,8 @@ namespace WindowsFormsApplication3
                                 break;
                             case RHOMBUS:
                                 t = norma(e.X - temp_points[0].X, field.Height - e.Y - temp_points[0].Y);
-                                u = Math.Acos((temp_points[1].X - temp_points[0].X) / norma(temp_points[1].X - temp_points[0].X, temp_points[1].Y - temp_points[0].Y)) + Math.PI / 2;
+                                u = Math.Acos((temp_points[1].X - temp_points[0].X) / norma(temp_points[1].X - temp_points[0].X, temp_points[1].Y - temp_points[0].Y));
+                                u = (temp_points[0].Y > temp_points[1].Y ? -u : u) + Math.PI / 2;
                                 pX = Math.Cos(u);
                                 pY = Math.Sin(u);
 
@@ -519,7 +522,8 @@ namespace WindowsFormsApplication3
                                 break;
                             case PENTAGON:
                                 t = norma(e.X - temp_points[0].X, field.Height - e.Y - temp_points[0].Y);
-                                u = Math.Acos((temp_points[1].X - temp_points[0].X) / norma(temp_points[1].X - temp_points[0].X, temp_points[1].Y - temp_points[0].Y)) + Math.PI / 2;
+                                u = Math.Acos((temp_points[1].X - temp_points[0].X) / norma(temp_points[1].X - temp_points[0].X, temp_points[1].Y - temp_points[0].Y));
+                                u = temp_points[0].Y > temp_points[1].Y ? -u : u;
                                 for (int i = 1; i < 6; i++)
                                 {
                                     pX = Math.Cos(u);

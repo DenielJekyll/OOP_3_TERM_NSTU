@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 
+using System.Threading;
 using Shapes;
 using Tree;
 using Tao.OpenGl;
@@ -22,8 +23,9 @@ namespace WindowsFormsApplication3
         private bool flag_input = false;// флаг для произвольного ввода точек
         private Shape GLOBAL = new Shape();//фигура для динамической отрисовки
         private uint pointer_shape = 1;//указатель на текущую фигуру
-        public const int PARALLELOGRAM = 14, PENTAGON = 8, RHOMBUS = 4;// константы обозначающие тип фигур
+        public const int PARALLELOGRAM = 14, PENTAGON = 8, ELLIPSE = 6, RHOMBUS = 4;// константы обозначающие тип фигур
         public bool DEBUG = true;
+        //public Thread display = new Thread(Draw);
 
         /* 
          Список известных ошибок:
@@ -35,7 +37,7 @@ namespace WindowsFormsApplication3
         Тест: вставлен костыль try - catch 
         - ошибка с удалением корня дерева если элементов больше 5
          */
-        
+
         public Form1()
         {
             InitializeComponent();
@@ -52,7 +54,7 @@ namespace WindowsFormsApplication3
             Glut.glutDisplayFunc(Draw);
             Glut.glutIdleFunc(Draw);
             // очистка окна 
-            Gl.glClearColor(0, 0, 0, 1);
+            Gl.glClearColor(255, 255, 255, 1);
             // установка порта вывода в соответствии с размерами элемента anT 
             Gl.glViewport(0, 0, field.Width, field.Height);
             Gl.glPointSize(5);
@@ -120,6 +122,9 @@ namespace WindowsFormsApplication3
                         case PENTAGON:
                             draw_Pentagon(temp);
                             break;
+                        case ELLIPSE:
+                            draw_Ellipse(temp);
+                            break;
                         default:
                             draw_Quadrangle(temp);
                             break;
@@ -175,6 +180,19 @@ namespace WindowsFormsApplication3
                         Gl.glVertex2f(GLOBAL.static_points[3].X, GLOBAL.static_points[3].Y);
                         Gl.glVertex2f(GLOBAL.static_points[4].X, GLOBAL.static_points[4].Y);
                         Gl.glVertex2f(GLOBAL.static_points[5].X, GLOBAL.static_points[5].Y);
+                        Gl.glEnd();
+                        break;
+                    case ELLIPSE:
+                        double x, y;
+                        int t;
+                        Gl.glBegin(Gl.GL_POLYGON);
+                        for (t = 0; t <= 360; t += 1)
+                        {
+                            double angle = t * Math.PI / 180;
+                            x = (temp_points[1].X - temp_points[0].X) * Math.Sin(t) + temp_points[0].X;
+                            y = (temp_points[2].Y - temp_points[0].Y) * Math.Cos(t) + temp_points[0].Y;
+                            Gl.glVertex2d(x, y);
+                        }
                         Gl.glEnd();
                         break;
                     default:
@@ -262,6 +280,38 @@ namespace WindowsFormsApplication3
             
         }
 
+        private void draw_Ellipse(dynamic ellipse)
+        {
+            double x, y;
+            int t;
+            Gl.glBegin(Gl.GL_POLYGON);
+            for (t = 0; t <= 360; t += 1)
+            {
+                x = ellipse.radius.X * Math.Sin(t) + ellipse.center.X;
+                y = ellipse.radius.Y * Math.Cos(t) + ellipse.center.Y;
+                Gl.glVertex2d(x, y);
+            }
+            Gl.glEnd();
+            if (ellipse.active)
+            {
+                Gl.glPointSize(3);
+                Gl.glColor3ub((byte)(255 - ellipse.color.R), (byte)(255 - ellipse.color.G), (byte)(255 - ellipse.color.B));
+                Gl.glBegin(Gl.GL_POINTS);
+                for (t = 0; t <= 360; t += 1)
+                {
+                    x = ellipse.radius.X * Math.Sin(t) + ellipse.center.X;
+                    y = ellipse.radius.Y * Math.Cos(t) + ellipse.center.Y;
+                    Gl.glVertex2d(x, y);
+                }
+                Gl.glEnd();
+                Gl.glPointSize(5);
+                Gl.glBegin(Gl.GL_POINTS);
+                Gl.glColor3d(0, 0, 0);
+                Gl.glVertex2d(ellipse.center.X, ellipse.center.Y);
+                Gl.glEnd();
+            }
+        }
+
         private uint index()
         {
             if (ShapesTree.CountElements() > 0)
@@ -284,8 +334,7 @@ namespace WindowsFormsApplication3
                 temp_points[3].Y = temp_points[0].Y + Convert.ToInt32((temp_points[2].Y - temp_points[1].Y) * t);
                 t = (double)(temp_points[1].Y - temp_points[2].Y) / (temp_points[2].Y - temp_points[0].Y - temp_points[1].Y + temp_points[3].Y);
                 Point center = new Point(temp_points[1].X + Convert.ToInt32((temp_points[1].X - temp_points[3].X) * t),
-                temp_points[1].Y + Convert.ToInt32((temp_points[1].Y - temp_points[3].Y) * t));
-                double R = norma(temp_points[1].X - center.X, temp_points[1].Y - center.Y);
+                temp_points[1].Y + Convert.ToInt32((temp_points[1].Y - temp_points[3].Y) * t)); double R = norma(temp_points[1].X - center.X, temp_points[1].Y - center.Y);
                 uint q = index();
                 ShapesTree.Insert(new Parallelogram(temp_points, center, R, q));
                 figuresList.Add(q, R);

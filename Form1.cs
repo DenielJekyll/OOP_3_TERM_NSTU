@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-using System.Threading;
 using Shapes;
 using Tree;
 using Tao.OpenGl;
@@ -185,12 +184,12 @@ namespace WindowsFormsApplication3
                     case ELLIPSE:
                         double x, y;
                         int t;
-                        Gl.glBegin(Gl.GL_POLYGON);
+                        Gl.glBegin(Gl.GL_LINE_LOOP);
                         for (t = 0; t <= 360; t += 1)
                         {
                             double angle = t * Math.PI / 180;
-                            x = (temp_points[1].X - temp_points[0].X) * Math.Sin(t) + temp_points[0].X;
-                            y = (temp_points[2].Y - temp_points[0].Y) * Math.Cos(t) + temp_points[0].Y;
+                            x = (temp_points[1].X - temp_points[0].X) * Math.Sin(angle) + temp_points[0].X;
+                            y = (temp_points[2].Y - temp_points[0].Y) * Math.Cos(angle) + temp_points[0].Y;
                             Gl.glVertex2d(x, y);
                         }
                         Gl.glEnd();
@@ -282,13 +281,15 @@ namespace WindowsFormsApplication3
 
         private void draw_Ellipse(dynamic ellipse)
         {
+            Point[] points = ellipse.static_points;
             double x, y;
             int t;
             Gl.glBegin(Gl.GL_POLYGON);
             for (t = 0; t <= 360; t += 1)
             {
-                x = ellipse.radius.X * Math.Sin(t) + ellipse.center.X;
-                y = ellipse.radius.Y * Math.Cos(t) + ellipse.center.Y;
+                double angle = t * Math.PI / 180;
+                x = (points[0].X - ellipse.center.X) * Math.Sin(angle) + ellipse.center.X;
+                y = (points[1].Y - ellipse.center.Y) * Math.Cos(angle) + ellipse.center.Y;
                 Gl.glVertex2d(x, y);
             }
             Gl.glEnd();
@@ -299,8 +300,9 @@ namespace WindowsFormsApplication3
                 Gl.glBegin(Gl.GL_POINTS);
                 for (t = 0; t <= 360; t += 1)
                 {
-                    x = ellipse.radius.X * Math.Sin(t) + ellipse.center.X;
-                    y = ellipse.radius.Y * Math.Cos(t) + ellipse.center.Y;
+                    double angle = t * Math.PI / 180;
+                    x = (points[0].X - ellipse.center.X) * Math.Sin(angle) + ellipse.center.X;
+                    y = (points[1].Y - ellipse.center.Y) * Math.Cos(angle) + ellipse.center.Y;
                     Gl.glVertex2d(x, y);
                 }
                 Gl.glEnd();
@@ -311,6 +313,7 @@ namespace WindowsFormsApplication3
                 Gl.glEnd();
             }
         }
+
 
         private uint index()
         {
@@ -414,6 +417,27 @@ namespace WindowsFormsApplication3
             }
         }
 
+        private void create_Ellipse(MouseEventArgs e)
+        {
+            Point center = new Point(temp_points[0].X, temp_points[0].Y);
+            temp_points[0] = temp_points[1];
+            temp_points[1].X = e.X;
+            temp_points[1].Y = field.Height - e.Y;
+            try
+            {
+                double R = norma(temp_points[1].X - center.X, temp_points[1].Y - center.Y) >= norma(temp_points[0].X - center.X, temp_points[0].Y - center.Y) ? norma(temp_points[1].X - center.X, temp_points[1].Y - center.Y) : norma(temp_points[0].X - center.X, temp_points[0].Y - center.Y);
+                uint q = index();
+                ShapesTree.Insert(new Ellipse(temp_points, center, R, q));
+                figuresList.Add(q, R);
+                cboxCountFigures.Items.Add(q);
+                cboxCountFigures.SelectedItem = q;
+            }
+            catch (Exception)
+            {
+                exeption_label.Text = "Некоректно заданы точки, фигура не построена";
+            }
+        }
+
         private void print_Text_2D(double x, double y, string text)
         {
 
@@ -505,6 +529,10 @@ namespace WindowsFormsApplication3
                                     u += Math.PI * 0.4;
                                 }
                                 break;
+                            case ELLIPSE:
+                                temp_points[2].X = e.X;
+                                temp_points[2].Y = field.Height - e.Y;
+                                break;
                             default:
                                 break;
                         }
@@ -541,6 +569,9 @@ namespace WindowsFormsApplication3
                                 break;
                             case PENTAGON:
                                 create_Pentagon(e);
+                                break;
+                            case ELLIPSE:
+                                create_Ellipse(e);
                                 break;
                             default:
                                 exeption_label.Text = "Ошибка не выбран тип создаваемой фигуры";
@@ -623,7 +654,7 @@ namespace WindowsFormsApplication3
                     writer.Write(p.X + " " + p.Y + " ");
                 writer.Write(Environment.NewLine + temp.center.X + " " + temp.center.Y + Environment.NewLine + temp.angle + Environment.NewLine
                     + temp.move_speed + " " + temp.rotating_speed + Environment.NewLine + temp.color.R + " " + temp.color.G + " " + temp.color.B
-                    + Environment.NewLine + temp.scale + Environment.NewLine + temp.translate.X + " " + temp.translate.Y + Environment.NewLine);
+                    + Environment.NewLine + temp.scale + Environment.NewLine + temp._translateX + " " + temp._translateY + Environment.NewLine);
             }
             writer.Close();
             file.Close();
@@ -672,7 +703,7 @@ namespace WindowsFormsApplication3
                         p.color = Color.FromArgb(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]), Convert.ToInt32(line.Split(' ')[2]));
                         p.scale = Convert.ToDouble(reader.ReadLine()) - 1;
                         line = reader.ReadLine();
-                        p.setTranslate(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
+                        p.setTranslate(Convert.ToDouble(line.Split(' ')[0]), Convert.ToDouble(line.Split(' ')[1]));
                         break;
                     case PENTAGON:
                         center = new Point(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
@@ -691,7 +722,7 @@ namespace WindowsFormsApplication3
                         pentagon.color = Color.FromArgb(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]), Convert.ToInt32(line.Split(' ')[2]));
                         pentagon.scale = Convert.ToDouble(reader.ReadLine()) - 1;
                         line = reader.ReadLine();
-                        pentagon.setTranslate(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
+                        pentagon.setTranslate(Convert.ToDouble(line.Split(' ')[0]), Convert.ToDouble(line.Split(' ')[1]));
                         break;
                     case RHOMBUS:
                         center = new Point(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
@@ -710,7 +741,26 @@ namespace WindowsFormsApplication3
                         rhombus.color = Color.FromArgb(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]), Convert.ToInt32(line.Split(' ')[2]));
                         rhombus.scale = Convert.ToDouble(reader.ReadLine()) - 1;
                         line = reader.ReadLine();
-                        rhombus.setTranslate(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
+                        rhombus.setTranslate(Convert.ToDouble(line.Split(' ')[0]), Convert.ToDouble(line.Split(' ')[1]));
+                        break;
+                    case ELLIPSE:
+                        center = new Point(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]));
+                        R = norma(temp_points[1].X - center.X, temp_points[1].Y - center.Y) >= norma(temp_points[0].X - center.X, temp_points[0].Y - center.Y) ? norma(temp_points[1].X - center.X, temp_points[1].Y - center.Y) : norma(temp_points[0].X - center.X, temp_points[0].Y - center.Y);
+                        q = index();
+                        ShapesTree.Insert(new Ellipse(temp_points, center, R, q));
+                        figuresList.Add(q, R);
+                        cboxCountFigures.Items.Add(q);
+                        cboxCountFigures.SelectedItem = q;
+                        Ellipse el = ShapesTree.Find(figuresList[q], q).Data;
+                        el.angle = Convert.ToDouble(reader.ReadLine());
+                        line = reader.ReadLine();
+                        el.rotating_speed = Convert.ToInt32(line.Split(' ')[1]);
+                        el.move_speed = Convert.ToInt32(line.Split(' ')[0]);
+                        line = reader.ReadLine();
+                        el.color = Color.FromArgb(Convert.ToInt32(line.Split(' ')[0]), Convert.ToInt32(line.Split(' ')[1]), Convert.ToInt32(line.Split(' ')[2]));
+                        el.scale = Convert.ToDouble(reader.ReadLine()) - 1;
+                        line = reader.ReadLine();
+                        el.setTranslate(Convert.ToDouble(line.Split(' ')[0]), Convert.ToDouble(line.Split(' ')[1]));
                         break;
                     default:
                         exeption_label.Text = "Ошибка файл содержит не определенный тип фигуры " + type;

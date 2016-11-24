@@ -50,8 +50,6 @@ namespace Shapes
             static_points[3].X = new_points[3].X;
             static_points[3].Y = new_points[3].Y;
 
-
-
             angle = 0;
             type = 14;
             scale = 1;
@@ -70,7 +68,6 @@ namespace Shapes
 
     public class Pentagon : Shape
     {
-        private Point _translate;
         public int type { get; }
 
         public Pentagon(Point[] new_points, Point center, double R, uint index)
@@ -100,7 +97,6 @@ namespace Shapes
             move_speed = 2;
             this.index = index;
             rotating_speed = 1;
-            _translate = new Point(0, 0);
             this.center = center;
             Random rand = new Random();
             color = Color.FromArgb(rand.Next(256), rand.Next(256), rand.Next(256));
@@ -109,7 +105,6 @@ namespace Shapes
 
     public class Rhombus : Shape
     {
-        private Point _translate;
         public int type { get; }
 
         public Rhombus(Point[] new_points, Point c, double R, uint index)
@@ -137,7 +132,6 @@ namespace Shapes
             move_speed = 2;
             this.index = index;
             rotating_speed = 1;
-            _translate = new Point(0, 0);
             Random rand = new Random();
             color = Color.FromArgb(rand.Next(256), rand.Next(256), rand.Next(256));
         }
@@ -146,15 +140,27 @@ namespace Shapes
     public class Ellipse : Shape
     {
         public int type { get; }
-        public Ellipse()
+
+        public Ellipse(Point[] points, Point c, double R, uint i)
         {
+            static_points = new Point[2];
+            static_points[0] = points[0];
+            static_points[1] = points[1];
 
+            this.R = R;
+            index = i;
+            type = 6;
+            angle = 0;
+            scale = 1;
+            center = c;
+            active = false;
+            move_speed = 2;
+            rotating_speed = 1;
+            _translateX = 0;
+            _translateY = 0;
 
-        }
-
-        public Ellipse(Point[] new_points, Point c)
-        {
-
+            Random rand = new Random();
+            color = Color.FromArgb(rand.Next(256), rand.Next(256), rand.Next(256));
         }
     }
 
